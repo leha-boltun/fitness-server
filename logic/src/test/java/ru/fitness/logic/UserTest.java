@@ -22,6 +22,8 @@ public class UserTest {
     private WorkoutRepoAdapter workoutRepo;
     private WUserRepoAdapter userRepo;
     private User user;
+    private IWorkout workout1;
+    private IWorkout workout2;
 
     @BeforeEach
     public void beforeEach() {
@@ -29,20 +31,20 @@ public class UserTest {
         userRepo = Mockito.mock(WUserRepoAdapter.class);
         user = new UserImpl(workoutRepo, userRepo);
         user.setUserId(5);
+        workout1 = Mockito.mock(IWorkout.class);
+        workout2 = Mockito.mock(IWorkout.class);
+        when(workout1.getId()).thenReturn(1L);
+        when(workout2.getId()).thenReturn(2L);
     }
 
     @Test
     public void getWorkoutsTest() {
-        IWorkout workout1 = Mockito.mock(IWorkout.class);
-        IWorkout workout2 = Mockito.mock(IWorkout.class);
-        when(workout1.getId()).thenReturn(1L);
-        when(workout2.getId()).thenReturn(2L);
         LocalDate cur = LocalDate.now();
         when(workout1.getWdate()).thenReturn(cur);
         when(workout2.getWdate()).thenReturn(cur);
         when(workoutRepo.findByUserId(5)).thenReturn(Arrays.asList(workout1, workout2));
         assertThat(user.getWorkouts(),
-                equalTo(Arrays.asList(new DWorkout(1L, cur), new DWorkout(2L, cur))));
+                equalTo(Arrays.asList(new DWorkout(1L, cur, false), new DWorkout(2L, cur, false))));
         verify(workoutRepo).findByUserId(5);
     }
 
@@ -53,5 +55,17 @@ public class UserTest {
         when(userRepo.getUser(5)).thenReturn(wuser);
         user.setUserId(5);
         assertThat(user.getMain(), equalTo(new DUserMain("user1")));
+    }
+
+    @Test
+    public void createWorkoutTest() {
+        IWorkout workout = Mockito.mock(IWorkout.class);
+        when(workoutRepo.createWorkout()).thenReturn(workout);
+        LocalDate cur = LocalDate.now();
+        when(workout.getWdate()).thenReturn(cur);
+        when(workout.getId()).thenReturn(21L);
+        user.setUserId(5);
+        assertThat(user.createWorkout(), equalTo(new DWorkout(21L, cur, false)));
+        verify(workout).setFinished(false);
     }
 }

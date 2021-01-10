@@ -7,4 +7,6 @@ public interface WUserRepoAdapter {
     List<IWuser> getAll();
 
     IWuser getUser(int id);
+
+    IWuser getUserRef(int id);
 }

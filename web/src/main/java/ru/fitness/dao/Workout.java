@@ -28,10 +28,20 @@ public class Workout implements IWorkout {
     private LocalDate wdate;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "wuserId", insertable = false, updatable = false)
+    @JoinColumn(nullable = false, name = "wuserId")
     private Wuser wuser;
 
-    private int wuserId;
+    private boolean finished;
+
+    @Override
+    public boolean isFinished() {
+        return finished;
+    }
+
+    @Override
+    public void setFinished(boolean finished) {
+        this.finished = finished;
+    }
 
     @Override
     public IWuser getWUser() {
@@ -69,15 +79,5 @@ public class Workout implements IWorkout {
     @Override
     public int hashCode() {
         return 31;
-    }
-
-    @Override
-    public int getWuserId() {
-        return wuserId;
-    }
-
-    @Override
-    public void setWuserId(int wuserId) {
-        this.wuserId = wuserId;
     }
 }

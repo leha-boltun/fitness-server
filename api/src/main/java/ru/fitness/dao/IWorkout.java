@@ -3,6 +3,10 @@ package ru.fitness.dao;
 import java.time.LocalDate;
 
 public interface IWorkout {
+    boolean isFinished();
+
+    void setFinished(boolean finished);
+
     IWuser getWUser();
 
     void setWUser(IWuser wUser);
@@ -12,8 +16,4 @@ public interface IWorkout {
     LocalDate getWdate();
 
     void setWdate(LocalDate wdate);
-
-    int getWuserId();
-
-    void setWuserId(int wuserId);
 }

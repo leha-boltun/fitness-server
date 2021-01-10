@@ -11,9 +11,13 @@ public class DWorkout {
     @NotNull
     public final LocalDate wdate;
 
-    public DWorkout(long id, LocalDate wdate) {
+    @NotNull
+    public final boolean finished;
+
+    public DWorkout(long id, LocalDate wdate, boolean finished) {
         this.id = id;
         this.wdate = wdate;
+        this.finished = finished;
     }
 
     @Override
@@ -21,13 +25,14 @@ public class DWorkout {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DWorkout dWorkout = (DWorkout) o;
-        return Objects.equals(id, dWorkout.id) &&
+        return id == dWorkout.id &&
+                finished == dWorkout.finished &&
                 Objects.equals(wdate, dWorkout.wdate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, wdate);
+        return Objects.hash(id, wdate, finished);
     }
 
     @Override
@@ -35,6 +40,7 @@ public class DWorkout {
         return "DWorkout{" +
                 "id=" + id +
                 ", wdate=" + wdate +
+                ", finished=" + finished +
                 '}';
     }
 }

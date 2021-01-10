@@ -36,7 +36,7 @@ public class UserImpl implements User {
     @Override
     public List<DWorkout> getWorkouts() {
         return workoutRepo.findByUserId(userId).stream().map((workout) ->
-                new DWorkout(workout.getId(), workout.getWdate())).collect(Collectors.toList());
+                new DWorkout(workout.getId(), workout.getWdate(), workout.isFinished())).collect(Collectors.toList());
     }
 
     @Override
@@ -47,9 +47,10 @@ public class UserImpl implements User {
     @Override
     public DWorkout createWorkout() {
         IWorkout workout = workoutRepo.createWorkout();
-        workout.setWuserId(userId);
+        workout.setWUser(userRepo.getUserRef(userId));
         workout.setWdate(LocalDate.now());
+        workout.setFinished(false);
         workoutRepo.saveWorkout(workout);
-        return new DWorkout(workout.getId(), workout.getWdate());
+        return new DWorkout(workout.getId(), workout.getWdate(), workout.isFinished());
     }
 }
