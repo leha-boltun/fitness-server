@@ -16,7 +16,12 @@ public class WUserRepoAdapterImpl implements WUserRepoAdapter {
     }
 
     @Override
-    public List<IWUser> getAll() {
-        return new ArrayList<>(this.wUserRepository.findAll());
+    public List<IWuser> getAll() {
+        return new ArrayList<>(wUserRepository.findAll());
+    }
+
+    @Override
+    public IWuser getUser(int id) {
+        return wUserRepository.findById(id);
     }
 }

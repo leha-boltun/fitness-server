@@ -4,6 +4,7 @@ import org.springframework.data.repository.Repository;
 
 import java.util.List;
 
-public interface WUserRepository extends Repository<WUser, Long> {
-    List<WUser> findAll();
+public interface WUserRepository extends Repository<Wuser, Integer> {
+    List<Wuser> findAll();
+    Wuser findById(int id);
 }

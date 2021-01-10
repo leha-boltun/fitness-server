@@ -9,7 +9,7 @@ import javax.persistence.Version;
 import java.util.Objects;
 
 @Entity
-public class WUser implements IWUser {
+public class Wuser implements IWuser {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "wuserId")
     @SequenceGenerator(
@@ -42,7 +42,7 @@ public class WUser implements IWUser {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        WUser wuser = (WUser) o;
+        Wuser wuser = (Wuser) o;
         return Objects.equals(id, wuser.id);
     }
 

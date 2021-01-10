@@ -3,7 +3,7 @@ package ru.fitness.logic;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import ru.fitness.dao.IWUser;
+import ru.fitness.dao.IWuser;
 import ru.fitness.dao.WUserRepoAdapter;
 import ru.fitness.dto.DUser;
 
@@ -18,14 +18,14 @@ public class UsersTest {
     private WUserRepoAdapter userRepo;
 
     @BeforeEach
-    public void uploadFiles() {
+    public void beforeEach() {
         userRepo = Mockito.mock(WUserRepoAdapter.class);
     }
 
     @Test
     public void getUsersTest() {
-        IWUser user1 = Mockito.mock(IWUser.class);
-        IWUser user2 = Mockito.mock(IWUser.class);
+        IWuser user1 = Mockito.mock(IWuser.class);
+        IWuser user2 = Mockito.mock(IWuser.class);
         when(user1.getId()).thenReturn(1);
         when(user2.getId()).thenReturn(2);
         when(user1.getName()).thenReturn("user1");

@@ -1,6 +1,6 @@
 package ru.fitness.dao;
 
-public interface IWUser {
+public interface IWuser {
     Integer getId();
 
     String getName();

@@ -4,5 +4,7 @@ import java.util.List;
 
 public interface WUserRepoAdapter {
 
-    List<IWUser> getAll();
+    List<IWuser> getAll();
+
+    IWuser getUser(int id);
 }

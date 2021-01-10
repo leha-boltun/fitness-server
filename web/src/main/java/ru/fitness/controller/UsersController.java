@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.fitness.dto.DUser;
 import ru.fitness.logic.Users;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController
@@ -16,6 +17,7 @@ public class UsersController {
     }
 
     @GetMapping("/users")
+    @Transactional
     public List<DUser> getUsers() {
         return users.getUsers();
     }
