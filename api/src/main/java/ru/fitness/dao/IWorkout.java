@@ -12,4 +12,8 @@ public interface IWorkout {
     LocalDate getWdate();
 
     void setWdate(LocalDate wdate);
+
+    int getWuserId();
+
+    void setWuserId(int wuserId);
 }

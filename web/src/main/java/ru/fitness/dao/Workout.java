@@ -1,6 +1,7 @@
 package ru.fitness.dao;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,7 +18,7 @@ public class Workout implements IWorkout {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "workoutId")
     @SequenceGenerator(
             name = "workoutId", sequenceName = "workoutId",
-            allocationSize = 10
+            allocationSize = 1
     )
     private Long id;
 
@@ -26,9 +27,11 @@ public class Workout implements IWorkout {
 
     private LocalDate wdate;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "wuserId", insertable = false, updatable = false)
     private Wuser wuser;
+
+    private int wuserId;
 
     @Override
     public IWuser getWUser() {
@@ -66,5 +69,15 @@ public class Workout implements IWorkout {
     @Override
     public int hashCode() {
         return 31;
+    }
+
+    @Override
+    public int getWuserId() {
+        return wuserId;
+    }
+
+    @Override
+    public void setWuserId(int wuserId) {
+        this.wuserId = wuserId;
     }
 }

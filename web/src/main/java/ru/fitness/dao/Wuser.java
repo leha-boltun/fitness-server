@@ -14,7 +14,7 @@ public class Wuser implements IWuser {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "wuserId")
     @SequenceGenerator(
             name = "wuserId", sequenceName = "wuserId",
-            allocationSize = 10
+            allocationSize = 1
     )
     private Integer id;
 

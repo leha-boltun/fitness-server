@@ -2,19 +2,34 @@ package ru.fitness.dao;
 
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class WorkoutRepoAdapterImpl implements WorkoutRepoAdapter {
     private final WorkoutRepository workoutRepo;
+    private final EntityManager entityManager;
 
-    public WorkoutRepoAdapterImpl(WorkoutRepository workoutRepo) {
+    public WorkoutRepoAdapterImpl(
+            WorkoutRepository workoutRepo,
+            EntityManager entityManager) {
         this.workoutRepo = workoutRepo;
+        this.entityManager = entityManager;
     }
 
     @Override
     public List<IWorkout> findByUserId(int userId) {
         return new ArrayList<>(workoutRepo.findByUserId(userId));
+    }
+
+    @Override
+    public IWorkout createWorkout() {
+        return new Workout();
+    }
+
+    @Override
+    public void saveWorkout(IWorkout workout) {
+        entityManager.persist(workout);
     }
 }

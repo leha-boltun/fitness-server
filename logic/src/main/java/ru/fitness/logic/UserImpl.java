@@ -3,11 +3,13 @@ package ru.fitness.logic;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import ru.fitness.dao.IWorkout;
 import ru.fitness.dao.WUserRepoAdapter;
 import ru.fitness.dao.WorkoutRepoAdapter;
 import ru.fitness.dto.DUserMain;
 import ru.fitness.dto.DWorkout;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,5 +42,14 @@ public class UserImpl implements User {
     @Override
     public DUserMain getMain() {
         return new DUserMain(userRepo.getUser(userId).getName());
+    }
+
+    @Override
+    public DWorkout createWorkout() {
+        IWorkout workout = workoutRepo.createWorkout();
+        workout.setWuserId(userId);
+        workout.setWdate(LocalDate.now());
+        workoutRepo.saveWorkout(workout);
+        return new DWorkout(workout.getId(), workout.getWdate());
     }
 }
