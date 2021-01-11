@@ -28,7 +28,7 @@ public class Workout implements IWorkout {
     private LocalDate wdate;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "wuserId")
+    @JoinColumn(nullable = false, name = "wuserId", updatable = false)
     private Wuser wuser;
 
     private boolean finished;

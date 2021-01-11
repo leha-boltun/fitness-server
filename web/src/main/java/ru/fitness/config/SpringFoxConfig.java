@@ -12,7 +12,7 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 
-import java.util.Arrays;
+import java.time.LocalTime;
 import java.util.Collections;
 
 @Configuration
@@ -25,6 +25,7 @@ public class SpringFoxConfig {
                 .paths(PathSelectors.any())
                 .build()
                 .securityContexts(Collections.singletonList(securityContext()))
+                .directModelSubstitute(LocalTime.class, String.class)
                 .securitySchemes(Collections.singletonList(basicAuthScheme()));
     }
 

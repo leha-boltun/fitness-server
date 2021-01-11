@@ -24,6 +24,11 @@ public class WorkoutRepoAdapterImpl implements WorkoutRepoAdapter {
     }
 
     @Override
+    public IWorkout getWorkoutRef(long id) {
+        return entityManager.getReference(Workout.class, id);
+    }
+
+    @Override
     public IWorkout createWorkout() {
         return new Workout();
     }
@@ -31,5 +36,10 @@ public class WorkoutRepoAdapterImpl implements WorkoutRepoAdapter {
     @Override
     public void saveWorkout(IWorkout workout) {
         entityManager.persist(workout);
+    }
+
+    @Override
+    public IWorkout getById(long id) {
+        return workoutRepo.getById(id);
     }
 }
