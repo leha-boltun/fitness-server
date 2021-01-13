@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class DUserMain {
     @NotNull
-    public final String name;
+    public String name;
 
     public DUserMain(String name) {
         this.name = name;

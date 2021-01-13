@@ -2,11 +2,9 @@ package ru.fitness.filter;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.FilterChain;
-
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +29,7 @@ public class AuthFilter extends OncePerRequestFilter {
         if (allowCors) {
             response.setHeader("Access-Control-Allow-Origin", "*");
             response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-            response.setHeader("Access-Control-Allow-Headers", "authorization");
+            response.setHeader("Access-Control-Allow-Headers", "authorization, content-type");
         }
         if (!request.getMethod().equals("OPTIONS") && !authStr.equals(request.getHeader("Authorization"))) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

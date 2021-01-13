@@ -6,16 +6,16 @@ import java.util.Objects;
 
 public class DWorkout {
     @NotNull
-    public final long id;
+    public long id;
 
     @NotNull
-    public final LocalDate wdate;
+    public LocalDate wdate;
 
     @NotNull
-    public final String programName;
+    public String programName;
 
     @NotNull
-    public final boolean finished;
+    public boolean finished;
 
     public DWorkout(long id, LocalDate wdate, @NotNull String programName, boolean finished) {
         this.id = id;

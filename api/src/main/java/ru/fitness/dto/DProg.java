@@ -5,10 +5,10 @@ import java.util.Objects;
 
 public class DProg {
     @NotNull
-    public final long id;
+    public long id;
 
     @NotNull
-    public final String name;
+    public String name;
 
     public DProg(long id, String name) {
         this.id = id;

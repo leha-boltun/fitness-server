@@ -1,15 +1,20 @@
 package ru.fitness.dao;
 
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class WorkoutExer implements IWorkoutExer {
@@ -35,15 +40,30 @@ public class WorkoutExer implements IWorkoutExer {
     @JoinColumn(nullable = false, name = "exerId")
     private Exer exer;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "workoutExer")
+    private Set<Wset> wsets;
+
+    @Override
+    public Set<IWset> getWsets() {
+        return new HashSet<>(wsets);
+    }
+
+    @Override
+    public void setWsets(Set<IWset> wsets) {
+        this.wsets = wsets.stream().map((wset) -> (Wset) wset).collect(Collectors.toSet());
+    }
+
     @Override
     public Long getId() {
         return id;
     }
 
+    @Override
     public IWorkout getWorkout() {
         return workout;
     }
 
+    @Override
     public void setWorkout(IWorkout workout) {
         this.workout = (Workout) workout;
     }

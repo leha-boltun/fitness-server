@@ -6,10 +6,17 @@ import javax.persistence.EntityManager;
 
 @Service
 public class WorkoutExerRepoAdapterImpl implements WorkoutExerRepoAdapter {
+    private final WorkoutExerRepository workoutExerRepo;
     private final EntityManager entityManager;
 
-    public WorkoutExerRepoAdapterImpl(EntityManager entityManager) {
+    public WorkoutExerRepoAdapterImpl(WorkoutExerRepository workoutRepository, EntityManager entityManager) {
+        this.workoutExerRepo = workoutRepository;
         this.entityManager = entityManager;
+    }
+
+    @Override
+    public IWorkoutExer getExerRef(long id) {
+        return entityManager.getReference(WorkoutExer.class, id);
     }
 
     @Override
@@ -20,5 +27,10 @@ public class WorkoutExerRepoAdapterImpl implements WorkoutExerRepoAdapter {
     @Override
     public void saveExer(IWorkoutExer exer) {
         entityManager.persist(exer);
+    }
+
+    @Override
+    public IWorkoutExer getById(long id) {
+        return workoutExerRepo.getById(id);
     }
 }

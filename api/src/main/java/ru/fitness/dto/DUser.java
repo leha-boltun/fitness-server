@@ -5,10 +5,10 @@ import java.util.Objects;
 
 public class DUser {
     @NotNull
-    public final int id;
+    public int id;
 
     @NotNull
-    public final String name;
+    public String name;
 
     public DUser(int id, String name) {
         this.id = id;

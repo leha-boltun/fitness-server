@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class DNextEvent {
     @NotNull
-    public final String name;
+    public String name;
 
     public DNextEvent(String name) {
         this.name = name;

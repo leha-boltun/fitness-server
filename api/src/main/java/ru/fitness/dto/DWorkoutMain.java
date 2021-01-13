@@ -6,10 +6,10 @@ import java.util.Objects;
 
 public class DWorkoutMain {
     @NotNull
-    public final LocalDate wdate;
+    public LocalDate wdate;
 
     @NotNull
-    public final boolean finished;
+    public boolean finished;
 
     public DWorkoutMain(LocalDate wdate, boolean finished) {
         this.wdate = wdate;

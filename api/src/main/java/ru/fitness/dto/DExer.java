@@ -5,10 +5,10 @@ import java.util.Objects;
 
 public class DExer {
     @NotNull
-    public final long id;
+    public long id;
 
     @NotNull
-    public final String name;
+    public String name;
 
     public DExer(long id, String name) {
         this.id = id;

@@ -51,14 +51,16 @@ create table workout_exer (
 
 create sequence workout_exer_id_seq start with 1 increment by 1;
 
-create table set (
+create table wset (
     id bigint not null primary key,
     version int not null,
     weight text not null,
+    count text not null,
+    wset_order int not null,
     workout_exer_id bigint not null references workout_exer(id) on delete cascade
 );
 
-create sequence set_id_seq start with 1 increment by 1;
+create sequence wset_id_seq start with 1 increment by 1;
 
 create table event_type (
     id int not null primary key,

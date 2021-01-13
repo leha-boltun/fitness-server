@@ -6,10 +6,10 @@ import java.util.Objects;
 
 public class DTimeStampMain {
     @NotNull
-    public final LocalTime time;
+    public LocalTime time;
 
     @NotNull
-    public final String type;
+    public String type;
 
     public DTimeStampMain(LocalTime time, String type) {
         this.time = time;
