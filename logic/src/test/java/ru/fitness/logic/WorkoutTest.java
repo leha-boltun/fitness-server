@@ -116,18 +116,21 @@ public class WorkoutTest {
         when(workoutRepo.getById(67)).thenReturn(iWorkout);
         when(iWorkout.isFinished()).thenReturn(false);
         when(eventTypeRepo.getNextEventType(67)).thenReturn(Optional.of(eventType1));
+        when(eventType1.getEventCode()).thenReturn(EventCode.END.getName());
         workout.setWorkoutId(67);
-        assertThat(workout.getNextEventName(), equalTo(new DNextEvent("eventName1")));
+        assertThat(workout.getNextEventName(), equalTo(new DNextEvent("eventName1", true)));
     }
 
     @Test
     public void processEventNotLast() {
         when(eventTypeRepo.getNextEventType(67)).thenReturn(Optional.of(eventType1)).thenReturn(Optional.of(eventType2));
+        when(eventType1.getEventCode()).thenReturn("rnd1");
+        when(eventType2.getEventCode()).thenReturn("rnd2");
         when(timeStampRepo.createTimeStamp()).thenReturn(timeStamp1);
         when(workoutRepo.getById(67)).thenReturn(iWorkout);
         when(iWorkout.isFinished()).thenReturn(false);
         workout.setWorkoutId(67);
-        assertThat(workout.processNextEvent(), equalTo(new DNextEvent("eventName2")));
+        assertThat(workout.processNextEvent(), equalTo(new DNextEvent("eventName2", false)));
 
         ArgumentCaptor<IEventType> nextType = ArgumentCaptor.forClass(IEventType.class);
         verify(timeStamp1).setEventType(nextType.capture());
@@ -141,11 +144,12 @@ public class WorkoutTest {
     @Test
     public void processEventLast() {
         when(eventTypeRepo.getNextEventType(67)).thenReturn(Optional.of(eventType1)).thenReturn(Optional.empty());
+        when(eventType2.getEventCode()).thenReturn("rnd3");
         when(timeStampRepo.createTimeStamp()).thenReturn(timeStamp1);
         when(workoutRepo.getById(67)).thenReturn(iWorkout);
         when(iWorkout.isFinished()).thenReturn(false);
         workout.setWorkoutId(67);
-        assertThat(workout.processNextEvent(), equalTo(new DNextEvent("")));
+        assertThat(workout.processNextEvent(), equalTo(new DNextEvent("", false)));
 
         ArgumentCaptor<IEventType> nextType = ArgumentCaptor.forClass(IEventType.class);
         verify(timeStamp1).setEventType(nextType.capture());

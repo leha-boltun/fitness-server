@@ -26,6 +26,18 @@ public class EventType implements IEventType {
     private int eventOrder;
 
     @Override
+    public String getEventCode() {
+        return eventCode;
+    }
+
+    @Override
+    public void setEventCode(String eventCode) {
+        this.eventCode = eventCode;
+    }
+
+    private String eventCode;
+
+    @Override
     public Integer getId() {
         return id;
     }

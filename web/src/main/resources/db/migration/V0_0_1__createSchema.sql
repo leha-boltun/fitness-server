@@ -66,7 +66,8 @@ create table event_type (
     id int not null primary key,
     version int not null,
     name text unique not null,
-    event_order int not null
+    event_order int not null,
+    event_code text not null
 );
 
 create sequence event_type_id_seq start with 1 increment by 1;

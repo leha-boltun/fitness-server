@@ -76,7 +76,10 @@ public class WorkoutImpl implements Workout {
         IWorkout workout = workoutRepo.getById(id);
         if (!workout.isFinished()) {
             Optional<IEventType> eType = eventTypeRepo.getNextEventType(id);
-            return eType.map(iEventType -> new DNextEvent(iEventType.getName())).orElseGet(() -> new DNextEvent(""));
+            return eType.map(iEventType -> new DNextEvent(
+                    iEventType.getName(),
+                    iEventType.getEventCode().equals(EventCode.END.getName())
+            )).orElseGet(() -> new DNextEvent("", false));
         } else {
             //TODO
             throw new RuntimeException();
@@ -98,11 +101,11 @@ public class WorkoutImpl implements Workout {
                 timeStampRepo.flush();
                 Optional<IEventType> newEType = eventTypeRepo.getNextEventType(id);
                 if (newEType.isPresent()) {
-                    return new DNextEvent(newEType.get().getName());
+                    return new DNextEvent(newEType.get().getName(), newEType.get().getEventCode().equals(EventCode.END.getName()));
                 } else {
                     workout.setFinished(true);
                     workoutRepo.saveWorkout(workout);
-                    return new DNextEvent("");
+                    return new DNextEvent("", false);
                 }
             } else {
                 //TODO

@@ -7,8 +7,12 @@ public class DNextEvent {
     @NotNull
     public String name;
 
-    public DNextEvent(String name) {
+    @NotNull
+    public boolean canAddWsets;
+
+    public DNextEvent(String name, boolean canAddWsets) {
         this.name = name;
+        this.canAddWsets = canAddWsets;
     }
 
     @Override
@@ -16,18 +20,20 @@ public class DNextEvent {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DNextEvent that = (DNextEvent) o;
-        return Objects.equals(name, that.name);
+        return canAddWsets == that.canAddWsets &&
+                Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(name, canAddWsets);
     }
 
     @Override
     public String toString() {
         return "DNextEvent{" +
                 "name='" + name + '\'' +
+                ", canAddWsets=" + canAddWsets +
                 '}';
     }
 }

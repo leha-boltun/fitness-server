@@ -2,6 +2,10 @@ package ru.fitness.dao;
 
 public interface IEventType {
 
+    String getEventCode();
+
+    void setEventCode(String eventCode);
+
     Integer getId();
 
     String getName();
