@@ -11,6 +11,4 @@ public interface User {
     List<DWorkout> getWorkouts();
 
     DUserMain getMain();
-
-    DWorkout createWorkout();
 }

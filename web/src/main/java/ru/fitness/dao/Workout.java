@@ -1,5 +1,6 @@
 package ru.fitness.dao;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -7,10 +8,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class Workout implements IWorkout {
@@ -30,6 +35,13 @@ public class Workout implements IWorkout {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "wuserId", updatable = false)
     private Wuser wuser;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "progId", updatable = false)
+    private Prog prog;
+
+    @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL)
+    private Set<WorkoutExer> workoutExers;
 
     private boolean finished;
 
@@ -79,5 +91,25 @@ public class Workout implements IWorkout {
     @Override
     public int hashCode() {
         return 31;
+    }
+
+    @Override
+    public IProg getProg() {
+        return prog;
+    }
+
+    @Override
+    public void setProg(IProg prog) {
+        this.prog = (Prog) prog;
+    }
+
+    @Override
+    public Set<IWorkoutExer> getWorkoutExers() {
+        return new HashSet<>(workoutExers);
+    }
+
+    @Override
+    public void setWorkoutExers(Set<IWorkoutExer> workoutExers) {
+        this.workoutExers = workoutExers.stream().map((e) -> (WorkoutExer) e).collect(Collectors.toSet());
     }
 }

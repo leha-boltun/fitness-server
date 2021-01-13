@@ -12,11 +12,15 @@ public class DWorkout {
     public final LocalDate wdate;
 
     @NotNull
+    public final String programName;
+
+    @NotNull
     public final boolean finished;
 
-    public DWorkout(long id, LocalDate wdate, boolean finished) {
+    public DWorkout(long id, LocalDate wdate, @NotNull String programName, boolean finished) {
         this.id = id;
         this.wdate = wdate;
+        this.programName = programName;
         this.finished = finished;
     }
 

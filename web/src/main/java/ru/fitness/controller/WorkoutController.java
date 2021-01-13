@@ -4,8 +4,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.fitness.dto.DExer;
 import ru.fitness.dto.DNextEvent;
 import ru.fitness.dto.DTimeStampMain;
+import ru.fitness.dto.DWorkout;
 import ru.fitness.dto.DWorkoutMain;
 import ru.fitness.logic.Workout;
 
@@ -46,5 +48,18 @@ public class WorkoutController {
     public DNextEvent processNextEvent(@PathVariable("id") long id) {
         workout.setWorkoutId(id);
         return workout.processNextEvent();
+    }
+
+    @PostMapping("/workout/{userId}/{progId}")
+    @Transactional
+    public DWorkout create(@PathVariable("userId") int userId, @PathVariable("progId") long progId) {
+        return workout.createWorkout(userId, progId);
+    }
+
+    @GetMapping("/workout/{id}/exers")
+    @Transactional
+    public List<DExer> getExers(@PathVariable("id") long id) {
+        workout.setWorkoutId(id);
+        return workout.getExers();
     }
 }

@@ -6,17 +6,27 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import ru.fitness.dao.EventTypeRepoAdapter;
 import ru.fitness.dao.IEventType;
+import ru.fitness.dao.IExer;
+import ru.fitness.dao.IProg;
+import ru.fitness.dao.IProgExer;
 import ru.fitness.dao.ITimeStamp;
 import ru.fitness.dao.IWorkout;
+import ru.fitness.dao.IWorkoutExer;
+import ru.fitness.dao.ProgRepoAdapter;
 import ru.fitness.dao.TimeStampRepoAdapter;
+import ru.fitness.dao.WUserRepoAdapter;
+import ru.fitness.dao.WorkoutExerRepoAdapter;
 import ru.fitness.dao.WorkoutRepoAdapter;
+import ru.fitness.dto.DExer;
 import ru.fitness.dto.DNextEvent;
 import ru.fitness.dto.DTimeStampMain;
+import ru.fitness.dto.DWorkout;
 import ru.fitness.dto.DWorkoutMain;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,6 +38,8 @@ public class WorkoutTest {
     private WorkoutRepoAdapter workoutRepo;
     private TimeStampRepoAdapter timeStampRepo;
     private EventTypeRepoAdapter eventTypeRepo;
+    private WorkoutExerRepoAdapter workoutExerRepo;
+    private ProgRepoAdapter progRepo;
     private IEventType eventType1;
     private IEventType eventType2;
     private ITimeStamp timeStamp1;
@@ -35,13 +47,20 @@ public class WorkoutTest {
     private Workout workout;
     private IWorkout iWorkout;
     private LocalDate workoutDate1;
+    private IWorkoutExer workoutExer1;
+    private IWorkoutExer workoutExer2;
+    private IExer exer1;
+    private IExer exer2;
 
     @BeforeEach
     public void beforeEach() {
         workoutRepo = Mockito.mock(WorkoutRepoAdapter.class);
         timeStampRepo = Mockito.mock(TimeStampRepoAdapter.class);
         eventTypeRepo = Mockito.mock(EventTypeRepoAdapter.class);
-        workout = new WorkoutImpl(workoutRepo, timeStampRepo, eventTypeRepo);
+        WUserRepoAdapter userRepo = Mockito.mock(WUserRepoAdapter.class);
+        progRepo = Mockito.mock(ProgRepoAdapter.class);
+        workoutExerRepo = Mockito.mock(WorkoutExerRepoAdapter.class);
+        workout = new WorkoutImpl(workoutExerRepo, userRepo, progRepo, workoutRepo, timeStampRepo, eventTypeRepo);
 
         eventType1 = Mockito.mock(IEventType.class);
         when(eventType1.getName()).thenReturn("eventName1");
@@ -58,6 +77,14 @@ public class WorkoutTest {
         workoutDate1 = LocalDate.now();
         when(iWorkout.getWdate()).thenReturn(workoutDate1);
         when(iWorkout.isFinished()).thenReturn(false);
+
+        workoutExer1 = Mockito.mock(IWorkoutExer.class);
+        workoutExer2 = Mockito.mock(IWorkoutExer.class);
+
+        exer1 = Mockito.mock(IExer.class);
+        exer2 = Mockito.mock(IExer.class);
+        when(exer1.getName()).thenReturn("Exer name 1");
+        when(exer2.getName()).thenReturn("Exer name 2");
     }
 
     @Test
@@ -129,5 +156,46 @@ public class WorkoutTest {
         verify(timeStampRepo).saveTimeStamp(timeStamp1);
         verify(iWorkout).setFinished(true);
         verify(workoutRepo).saveWorkout(iWorkout);
+    }
+
+    @Test
+    public void createWorkout() {
+        IWorkout iWorkout = Mockito.mock(IWorkout.class);
+        when(workoutRepo.createWorkout()).thenReturn(iWorkout);
+        IProg prog = Mockito.mock(IProg.class);
+        when(progRepo.getProg(66)).thenReturn(prog);
+        when(prog.getName()).thenReturn("Prog name 1");
+        IProgExer progExer1 = Mockito.mock(IProgExer.class);
+        IProgExer progExer2 = Mockito.mock(IProgExer.class);
+        when(progExer1.getExer()).thenReturn(exer1);
+        when(progExer1.getExerOrder()).thenReturn(1);
+        when(progExer2.getExer()).thenReturn(exer2);
+        when(progExer2.getExerOrder()).thenReturn(5);
+        when(prog.getProgExers()).thenReturn(new HashSet<>(Arrays.asList(progExer2, progExer1)));
+        when(workoutExerRepo.createExer()).thenReturn(workoutExer1).thenReturn(workoutExer2);
+        LocalDate cur = LocalDate.now();
+        when(iWorkout.getWdate()).thenReturn(cur);
+        when(iWorkout.getId()).thenReturn(21L);
+        when(iWorkout.getProg()).thenReturn(prog);
+        assertThat(workout.createWorkout(5, 66), equalTo(new DWorkout(21L, cur, "Prog name 1", false)));
+        verify(iWorkout).setFinished(false);
+        verify(iWorkout).setProg(prog);
+        verify(workoutExer1).setExer(exer1);
+        verify(workoutExer1).setWorkout(iWorkout);
+        verify(workoutExer1).setExerOrder(0);
+    }
+
+    @Test
+    public void getExers() {
+        when(workoutRepo.getById(51)).thenReturn(iWorkout);
+        when(iWorkout.getWorkoutExers()).thenReturn(new HashSet<>(Arrays.asList(workoutExer1, workoutExer2)));
+        when(workoutExer1.getExer()).thenReturn(exer1);
+        when(workoutExer1.getId()).thenReturn(1L);
+        when(workoutExer1.getExerOrder()).thenReturn(1);
+        when(workoutExer2.getExer()).thenReturn(exer2);
+        when(workoutExer2.getId()).thenReturn(2L);
+        when(workoutExer2.getExerOrder()).thenReturn(5);
+        workout.setWorkoutId(51);
+        assertThat(workout.getExers(), equalTo(Arrays.asList(new DExer(1, "Exer name 1"), new DExer(2, "Exer name 2"))));
     }
 }

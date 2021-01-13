@@ -3,6 +3,7 @@ package ru.fitness.logic;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import ru.fitness.dao.IProg;
 import ru.fitness.dao.IWorkout;
 import ru.fitness.dao.IWuser;
 import ru.fitness.dao.WUserRepoAdapter;
@@ -42,9 +43,13 @@ public class UserTest {
         LocalDate cur = LocalDate.now();
         when(workout1.getWdate()).thenReturn(cur);
         when(workout2.getWdate()).thenReturn(cur);
+        IProg prog = Mockito.mock(IProg.class);
+        when(prog.getName()).thenReturn("Program name 1");
+        when(workout1.getProg()).thenReturn(prog);
+        when(workout2.getProg()).thenReturn(prog);
         when(workoutRepo.findByUserId(5)).thenReturn(Arrays.asList(workout1, workout2));
         assertThat(user.getWorkouts(),
-                equalTo(Arrays.asList(new DWorkout(1L, cur, false), new DWorkout(2L, cur, false))));
+                equalTo(Arrays.asList(new DWorkout(1L, cur, "Program name 1", false), new DWorkout(2L, cur, "Program name 1", false))));
         verify(workoutRepo).findByUserId(5);
     }
 
@@ -55,17 +60,5 @@ public class UserTest {
         when(userRepo.getUser(5)).thenReturn(wuser);
         user.setUserId(5);
         assertThat(user.getMain(), equalTo(new DUserMain("user1")));
-    }
-
-    @Test
-    public void createWorkoutTest() {
-        IWorkout workout = Mockito.mock(IWorkout.class);
-        when(workoutRepo.createWorkout()).thenReturn(workout);
-        LocalDate cur = LocalDate.now();
-        when(workout.getWdate()).thenReturn(cur);
-        when(workout.getId()).thenReturn(21L);
-        user.setUserId(5);
-        assertThat(user.createWorkout(), equalTo(new DWorkout(21L, cur, false)));
-        verify(workout).setFinished(false);
     }
 }

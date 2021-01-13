@@ -2,7 +2,6 @@ package ru.fitness.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.fitness.dto.DUserMain;
 import ru.fitness.dto.DWorkout;
@@ -24,13 +23,6 @@ public class UserController {
     public List<DWorkout> getWorkouts(@PathVariable("userId") int userId) {
         user.setUserId(userId);
         return user.getWorkouts();
-    }
-
-    @PostMapping("/user/{userId}/newWorkout")
-    @Transactional
-    public DWorkout newWorkout(@PathVariable("userId") int userId) {
-        user.setUserId(userId);
-        return user.createWorkout();
     }
 
     @GetMapping("/user/{userId}/main")

@@ -1,6 +1,7 @@
 package ru.fitness.dao;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 public interface IWorkout {
     boolean isFinished();
@@ -16,4 +17,12 @@ public interface IWorkout {
     LocalDate getWdate();
 
     void setWdate(LocalDate wdate);
+
+    IProg getProg();
+
+    void setProg(IProg prog);
+
+    Set<IWorkoutExer> getWorkoutExers();
+
+    void setWorkoutExers(Set<IWorkoutExer> workoutExers);
 }
