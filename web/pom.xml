@@ -4,6 +4,36 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <profiles>
+        <profile>
+            <id>prod</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                    </resource>
+                    <resource>
+                        <targetPath>public</targetPath>
+                        <directory>${basedir}/../../fitness-client/dist</directory>
+                        <includes>
+                            <include>bundle.js</include>
+                        </includes>
+                    </resource>
+                    <resource>
+                        <targetPath>public</targetPath>
+                        <directory>${basedir}/../../fitness-client</directory>
+                        <includes>
+                            <include>index.html</include>
+                        </includes>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+    </profiles>
+
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>

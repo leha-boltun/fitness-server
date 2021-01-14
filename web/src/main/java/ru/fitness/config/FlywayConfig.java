@@ -14,6 +14,8 @@ public class FlywayConfig {
     private boolean needClean;
     @Value("${fitness.db.fill-test-data:false}")
     private boolean fillTestData;
+    @Value("${fitness.db.prod-data:}")
+    private String prodData;
 
     @Bean
     public Flyway flyway(DataSource theDataSource) {
@@ -21,8 +23,10 @@ public class FlywayConfig {
         conf.dataSource(theDataSource);
         if (fillTestData) {
             conf.locations("classpath:db/migration", "classpath:db/testmigration");
-        } else {
+        } else if (prodData.isEmpty()) {
             conf.locations("classpath:db/migration");
+        } else {
+            conf.locations("classpath:db/migration", prodData);
         }
         Flyway flyway = conf.load();
         if (needClean) {

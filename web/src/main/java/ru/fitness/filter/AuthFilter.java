@@ -31,7 +31,8 @@ public class AuthFilter extends OncePerRequestFilter {
             response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             response.setHeader("Access-Control-Allow-Headers", "authorization, content-type");
         }
-        if (!request.getMethod().equals("OPTIONS") && !authStr.equals(request.getHeader("Authorization"))) {
+        if (request.getRequestURI().startsWith("/pi/") &&
+        !request.getMethod().equals("OPTIONS") && !authStr.equals(request.getHeader("Authorization"))) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setHeader("WWW-Authenticate", "Basic realm=\"User Visible Realm\"");
         } else {
