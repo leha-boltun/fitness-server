@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
@@ -44,6 +45,8 @@ public class Workout implements IWorkout {
     private Set<WorkoutExer> workoutExers;
 
     private boolean finished;
+
+    private BigDecimal weight;
 
     @Override
     public boolean isFinished() {
@@ -111,5 +114,15 @@ public class Workout implements IWorkout {
     @Override
     public void setWorkoutExers(Set<IWorkoutExer> workoutExers) {
         this.workoutExers = workoutExers.stream().map((e) -> (WorkoutExer) e).collect(Collectors.toSet());
+    }
+
+    @Override
+    public BigDecimal getWeight() {
+        return weight;
+    }
+
+    @Override
+    public void setWeight(BigDecimal weight) {
+        this.weight = weight;
     }
 }

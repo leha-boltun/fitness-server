@@ -10,9 +10,13 @@ public class DNextEvent {
     @NotNull
     public boolean canAddWsets;
 
-    public DNextEvent(String name, boolean canAddWsets) {
+    @NotNull
+    public boolean canSetWeight;
+
+    public DNextEvent(String name, boolean canAddWsets, boolean canSetWeight) {
         this.name = name;
         this.canAddWsets = canAddWsets;
+        this.canSetWeight = canSetWeight;
     }
 
     @Override

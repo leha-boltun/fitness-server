@@ -1,6 +1,8 @@
 package ru.fitness.logic;
 
 public enum EventCode {
+    BEFORE_BEGIN("BEFORE_BEGIN"),
+    BEGIN("BEGIN"),
     END("END");
 
     private final String name;

@@ -1,0 +1,1 @@
+alter table workout add column weight numeric(5,2);

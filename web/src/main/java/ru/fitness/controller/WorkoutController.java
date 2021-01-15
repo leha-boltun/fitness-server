@@ -3,6 +3,7 @@ package ru.fitness.controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.fitness.dto.DExer;
 import ru.fitness.dto.DNextEvent;
@@ -12,6 +13,7 @@ import ru.fitness.dto.DWorkoutMain;
 import ru.fitness.logic.Workout;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -47,6 +49,14 @@ public class WorkoutController {
     @Transactional
     public DNextEvent processNextEvent(@PathVariable("id") long id) {
         workout.setWorkoutId(id);
+        return workout.processNextEvent();
+    }
+
+    @PostMapping("/workout/{id}/nextSetWeight")
+    @Transactional
+    public DNextEvent processNextEventSetWeight(@PathVariable("id") long id, @RequestBody BigDecimal weight) {
+        workout.setWorkoutId(id);
+        workout.setWeight(weight);
         return workout.processNextEvent();
     }
 

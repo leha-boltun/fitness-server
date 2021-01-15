@@ -1,6 +1,7 @@
 package ru.fitness.dto;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -11,9 +12,17 @@ public class DWorkoutMain {
     @NotNull
     public boolean finished;
 
+    public BigDecimal weight;
+
     public DWorkoutMain(LocalDate wdate, boolean finished) {
         this.wdate = wdate;
         this.finished = finished;
+    }
+
+    public DWorkoutMain(LocalDate wdate, boolean finished, BigDecimal weight) {
+        this.wdate = wdate;
+        this.finished = finished;
+        this.weight = weight;
     }
 
     @Override
@@ -22,12 +31,13 @@ public class DWorkoutMain {
         if (o == null || getClass() != o.getClass()) return false;
         DWorkoutMain that = (DWorkoutMain) o;
         return finished == that.finished &&
-                Objects.equals(wdate, that.wdate);
+                Objects.equals(wdate, that.wdate) &&
+                Objects.equals(weight, that.weight);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(wdate, finished);
+        return Objects.hash(wdate, finished, weight);
     }
 
     @Override
@@ -35,6 +45,7 @@ public class DWorkoutMain {
         return "DWorkoutMain{" +
                 "wdate=" + wdate +
                 ", finished=" + finished +
+                ", weight=" + weight +
                 '}';
     }
 }

@@ -21,6 +21,7 @@ import ru.fitness.dto.DTimeStampMain;
 import ru.fitness.dto.DWorkout;
 import ru.fitness.dto.DWorkoutMain;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -60,9 +61,15 @@ public class WorkoutImpl implements Workout {
     @Override
     public DWorkoutMain getMain() {
         IWorkout workout = workoutRepo.getById(id);
-        return new DWorkoutMain(workout.getWdate(), workout.isFinished());
+        return new DWorkoutMain(workout.getWdate(), workout.isFinished(), workout.getWeight());
     }
 
+    @Override
+    public void setWeight(BigDecimal weight) {
+        IWorkout workout = workoutRepo.getById(id);
+        workout.setWeight(weight);
+        workoutRepo.saveWorkout(workout);
+    }
 
     @Override
     public List<DTimeStampMain> getTimeStamps() {
@@ -78,8 +85,9 @@ public class WorkoutImpl implements Workout {
             Optional<IEventType> eType = eventTypeRepo.getNextEventType(id);
             return eType.map(iEventType -> new DNextEvent(
                     iEventType.getName(),
-                    iEventType.getEventCode().equals(EventCode.END.getName())
-            )).orElseGet(() -> new DNextEvent("", false));
+                    iEventType.getEventCode().equals(EventCode.END.getName()),
+                    iEventType.getEventCode().equals(EventCode.BEFORE_BEGIN.getName())
+            )).orElseGet(() -> new DNextEvent("", false, false));
         } else {
             //TODO
             throw new RuntimeException();
@@ -101,11 +109,13 @@ public class WorkoutImpl implements Workout {
                 timeStampRepo.flush();
                 Optional<IEventType> newEType = eventTypeRepo.getNextEventType(id);
                 if (newEType.isPresent()) {
-                    return new DNextEvent(newEType.get().getName(), newEType.get().getEventCode().equals(EventCode.END.getName()));
+                    return new DNextEvent(newEType.get().getName(),
+                            newEType.get().getEventCode().equals(EventCode.END.getName()),
+                            newEType.get().getEventCode().equals(EventCode.BEFORE_BEGIN.getName()));
                 } else {
                     workout.setFinished(true);
                     workoutRepo.saveWorkout(workout);
-                    return new DNextEvent("", false);
+                    return new DNextEvent("", false, false);
                 }
             } else {
                 //TODO

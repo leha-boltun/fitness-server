@@ -6,12 +6,15 @@ import ru.fitness.dto.DTimeStampMain;
 import ru.fitness.dto.DWorkout;
 import ru.fitness.dto.DWorkoutMain;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface Workout {
     void setWorkoutId(long id);
 
     DWorkoutMain getMain();
+
+    void setWeight(BigDecimal weight);
 
     List<DTimeStampMain> getTimeStamps();
 

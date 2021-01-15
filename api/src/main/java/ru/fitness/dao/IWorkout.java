@@ -1,5 +1,6 @@
 package ru.fitness.dao;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -25,4 +26,8 @@ public interface IWorkout {
     Set<IWorkoutExer> getWorkoutExers();
 
     void setWorkoutExers(Set<IWorkoutExer> workoutExers);
+
+    BigDecimal getWeight();
+
+    void setWeight(BigDecimal weight);
 }

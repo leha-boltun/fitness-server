@@ -12,6 +12,7 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 
+import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.Collections;
 
@@ -26,6 +27,7 @@ public class SpringFoxConfig {
                 .build()
                 .securityContexts(Collections.singletonList(securityContext()))
                 .directModelSubstitute(LocalTime.class, String.class)
+                .directModelSubstitute(BigDecimal.class, String.class)
                 .securitySchemes(Collections.singletonList(basicAuthScheme()));
     }
 

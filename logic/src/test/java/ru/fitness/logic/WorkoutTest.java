@@ -23,6 +23,7 @@ import ru.fitness.dto.DTimeStampMain;
 import ru.fitness.dto.DWorkout;
 import ru.fitness.dto.DWorkoutMain;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -118,19 +119,19 @@ public class WorkoutTest {
         when(eventTypeRepo.getNextEventType(67)).thenReturn(Optional.of(eventType1));
         when(eventType1.getEventCode()).thenReturn(EventCode.END.getName());
         workout.setWorkoutId(67);
-        assertThat(workout.getNextEventName(), equalTo(new DNextEvent("eventName1", true)));
+        assertThat(workout.getNextEventName(), equalTo(new DNextEvent("eventName1", true, false)));
     }
 
     @Test
     public void processEventNotLast() {
         when(eventTypeRepo.getNextEventType(67)).thenReturn(Optional.of(eventType1)).thenReturn(Optional.of(eventType2));
-        when(eventType1.getEventCode()).thenReturn("rnd1");
+        when(eventType1.getEventCode()).thenReturn(EventCode.BEFORE_BEGIN.getName());
         when(eventType2.getEventCode()).thenReturn("rnd2");
         when(timeStampRepo.createTimeStamp()).thenReturn(timeStamp1);
         when(workoutRepo.getById(67)).thenReturn(iWorkout);
         when(iWorkout.isFinished()).thenReturn(false);
         workout.setWorkoutId(67);
-        assertThat(workout.processNextEvent(), equalTo(new DNextEvent("eventName2", false)));
+        assertThat(workout.processNextEvent(), equalTo(new DNextEvent("eventName2", false, true)));
 
         ArgumentCaptor<IEventType> nextType = ArgumentCaptor.forClass(IEventType.class);
         verify(timeStamp1).setEventType(nextType.capture());
@@ -149,7 +150,7 @@ public class WorkoutTest {
         when(workoutRepo.getById(67)).thenReturn(iWorkout);
         when(iWorkout.isFinished()).thenReturn(false);
         workout.setWorkoutId(67);
-        assertThat(workout.processNextEvent(), equalTo(new DNextEvent("", false)));
+        assertThat(workout.processNextEvent(), equalTo(new DNextEvent("", false, true)));
 
         ArgumentCaptor<IEventType> nextType = ArgumentCaptor.forClass(IEventType.class);
         verify(timeStamp1).setEventType(nextType.capture());
@@ -164,7 +165,6 @@ public class WorkoutTest {
 
     @Test
     public void createWorkout() {
-        IWorkout iWorkout = Mockito.mock(IWorkout.class);
         when(workoutRepo.createWorkout()).thenReturn(iWorkout);
         IProg prog = Mockito.mock(IProg.class);
         when(progRepo.getProg(66)).thenReturn(prog);
@@ -187,6 +187,16 @@ public class WorkoutTest {
         verify(workoutExer1).setExer(exer1);
         verify(workoutExer1).setWorkout(iWorkout);
         verify(workoutExer1).setExerOrder(0);
+    }
+
+    @Test
+    public void setWeight() {
+        when(workoutRepo.getById(67)).thenReturn(iWorkout);
+        workout.setWorkoutId(67);
+        BigDecimal weight = new BigDecimal("68.9");
+        workout.setWeight(weight);
+        verify(iWorkout).setWeight(weight);
+        verify(workoutRepo).saveWorkout(iWorkout);
     }
 
     @Test

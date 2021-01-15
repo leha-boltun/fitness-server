@@ -1,0 +1,1 @@
+update event_type set event_code = 'BEFORE_BEGIN' where id = (select min(id) from event_type)
