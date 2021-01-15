@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -73,9 +74,25 @@ public class WorkoutImpl implements Workout {
 
     @Override
     public List<DTimeStampMain> getTimeStamps() {
-        return timeStampRepo.getByWorkoutId(id).stream()
-                .map((timeStamp) -> new DTimeStampMain(timeStamp.getWtime(), timeStamp.getEventType().getName()))
+        DTimeStampMain[] prevStamp = new DTimeStampMain[1];
+        List<ITimeStamp> stamps = timeStampRepo.getByWorkoutId(id);
+        Collections.reverse(stamps);
+        List<DTimeStampMain> result = stamps.stream()
+                .map((timeStamp) -> {
+                    DTimeStampMain curStamp;
+                    if (prevStamp[0] == null) {
+                        curStamp = new DTimeStampMain(timeStamp.getWtime(), timeStamp.getEventType().getName());
+                    } else {
+                        curStamp = new DTimeStampMain(
+                                timeStamp.getWtime(), timeStamp.getEventType().getName(),
+                                timeStamp.getWtime().minusNanos(prevStamp[0].time.toNanoOfDay()));
+                    }
+                    prevStamp[0] = curStamp;
+                    return curStamp;
+                })
                 .collect(Collectors.toList());
+        Collections.reverse(result);
+        return result;
     }
 
     @Override

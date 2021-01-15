@@ -71,7 +71,7 @@ public class WorkoutTest {
         when(eventType2.getEventOrder()).thenReturn(200);
 
         timeStamp1 = Mockito.mock(ITimeStamp.class);
-        time1 = LocalTime.of(10, 10, 10);
+        time1 = LocalTime.of(10, 0, 0);
         when(timeStamp1.getWtime()).thenReturn(time1);
 
         iWorkout = Mockito.mock(IWorkout.class);
@@ -98,7 +98,7 @@ public class WorkoutTest {
     @Test
     public void getTimeStamps() {
         ITimeStamp timeStamp2 = Mockito.mock(ITimeStamp.class);
-        LocalTime time2 = LocalTime.of(12, 10, 10);
+        LocalTime time2 = LocalTime.of(8, 0, 0);
         when(timeStamp2.getWtime()).thenReturn(time2);
         IEventType eventType1 = Mockito.mock(IEventType.class);
         IEventType eventType2 = Mockito.mock(IEventType.class);
@@ -109,7 +109,8 @@ public class WorkoutTest {
         when(timeStampRepo.getByWorkoutId(56)).thenReturn(Arrays.asList(timeStamp1, timeStamp2));
         workout.setWorkoutId(56);
         assertThat(workout.getTimeStamps(),
-                equalTo(Arrays.asList(new DTimeStampMain(time1, "name1"), new DTimeStampMain(time2, "name2"))));
+                equalTo(Arrays.asList(new DTimeStampMain(time1, "name1", LocalTime.of(2, 0, 0)),
+                        new DTimeStampMain(time2, "name2"))));
     }
 
     @Test
