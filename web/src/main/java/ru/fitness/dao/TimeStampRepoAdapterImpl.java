@@ -2,6 +2,7 @@ package ru.fitness.dao;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.fitness.exception.NoTimestampException;
 
 import javax.persistence.EntityManager;
 import java.util.ArrayList;
@@ -38,7 +39,22 @@ public class TimeStampRepoAdapterImpl implements TimeStampRepoAdapter {
     }
 
     @Override
-    public ITimeStamp getFirstEvent(long workoutId) {
-        return repo.getFirstTimeStamp(workoutId, PageRequest.of(0, 1)).get(0);
+    public ITimeStamp getFirstTimeStamp(long workoutId) {
+        List<TimeStamp> stamps = repo.getFirstTimeStamp(workoutId, PageRequest.of(0, 1));
+        if (stamps.isEmpty()) {
+            throw new NoTimestampException();
+        } else {
+            return stamps.get(0);
+        }
+    }
+
+    @Override
+    public ITimeStamp getLastTimeStamp(long workoutId) {
+        List<TimeStamp> stamps = repo.getLastTimeStamp(workoutId, PageRequest.of(0, 1));
+        if (stamps.isEmpty()) {
+            throw new NoTimestampException();
+        } else {
+            return stamps.get(0);
+        }
     }
 }

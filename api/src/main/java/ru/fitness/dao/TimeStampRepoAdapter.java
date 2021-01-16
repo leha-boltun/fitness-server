@@ -11,5 +11,7 @@ public interface TimeStampRepoAdapter {
 
     void flush();
 
-    ITimeStamp getFirstEvent(long workoutId);
+    ITimeStamp getFirstTimeStamp(long workoutId);
+
+    ITimeStamp getLastTimeStamp(long workoutId);
 }

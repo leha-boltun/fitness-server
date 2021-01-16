@@ -22,6 +22,7 @@ import ru.fitness.dto.DNextEvent;
 import ru.fitness.dto.DTimeStampMain;
 import ru.fitness.dto.DWorkout;
 import ru.fitness.dto.DWorkoutMain;
+import ru.fitness.exception.NoTimestampException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -31,10 +32,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 
-import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.lessThan;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -95,13 +94,14 @@ public class WorkoutTest {
     public void getMain() {
         when(iWorkout.getWuserId()).thenReturn(77);
         when(iWorkout.isFinished()).thenReturn(true);
-        when(iWorkout.getTotalTime()).thenReturn(LocalTime.of(2, 5));
         when(iWorkout.getWeight()).thenReturn(new BigDecimal("2.4"));
         when(workoutRepo.getById(55)).thenReturn(iWorkout);
+        when(timeStampRepo.getFirstTimeStamp(55)).thenThrow(NoTimestampException.class);
+        when(timeStampRepo.getLastTimeStamp(55)).thenThrow(NoTimestampException.class);
         workout.setWorkoutId(55);
         assertThat(workout.getMain(),
                 equalTo(new DWorkoutMain(77, workoutDate1, true,
-                        new BigDecimal("2.4"), LocalTime.of(2, 5))));
+                        new BigDecimal("2.4"), null)));
     }
 
     @Test
@@ -154,11 +154,6 @@ public class WorkoutTest {
 
     @Test
     public void processEventLast() {
-        ITimeStamp timeStamp2 = Mockito.mock(ITimeStamp.class);
-        when(timeStampRepo.getFirstEvent(67)).thenReturn(timeStamp2);
-        LocalTime firstTime = LocalTime.now().minus(1, ChronoUnit.MINUTES);
-        when(timeStamp2.getWtime()).thenReturn(firstTime);
-
         when(eventTypeRepo.getNextEventType(67)).thenReturn(Optional.of(eventType1)).thenReturn(Optional.empty());
         when(eventType2.getEventCode()).thenReturn("rnd3");
         when(timeStampRepo.createTimeStamp()).thenReturn(timeStamp1);
@@ -176,8 +171,6 @@ public class WorkoutTest {
         verify(timeStampRepo).saveTimeStamp(timeStamp1);
         verify(iWorkout).setFinished(true);
         ArgumentCaptor<LocalTime> totalTimeArg = ArgumentCaptor.forClass(LocalTime.class);
-        verify(iWorkout).setTotalTime(totalTimeArg.capture());
-        assertThat(SECONDS.between(totalTimeArg.getValue(), firstTime), lessThan(58L));
         verify(workoutRepo).saveWorkout(iWorkout);
     }
 
@@ -219,11 +212,20 @@ public class WorkoutTest {
 
     @Test
     public void getTotalTime() {
-        LocalTime time = LocalTime.of(2, 10);
-        when(iWorkout.getTotalTime()).thenReturn(time);
+        ITimeStamp timeStamp2 = Mockito.mock(ITimeStamp.class);
+        when(timeStampRepo.getFirstTimeStamp(67)).thenReturn(timeStamp2);
+        LocalTime firstTime = LocalTime.now().minus(3, ChronoUnit.MINUTES);
+        when(timeStamp2.getWtime()).thenReturn(firstTime);
+
+        ITimeStamp timeStamp3 = Mockito.mock(ITimeStamp.class);
+        when(timeStampRepo.getLastTimeStamp(67)).thenReturn(timeStamp3);
+        LocalTime lastTime = firstTime.plus(1, ChronoUnit.MINUTES);
+        when(timeStamp3.getWtime()).thenReturn(lastTime);
+
+        when(timeStampRepo.getFirstTimeStamp(67)).thenReturn(timeStamp2);
         when(workoutRepo.getById(67)).thenReturn(iWorkout);
         workout.setWorkoutId(67);
-        assertThat(workout.getTotalTime(), equalTo(time));
+        assertThat(workout.getTotalTime(), equalTo(LocalTime.of(0, 1, 0)));
     }
 
     @Test

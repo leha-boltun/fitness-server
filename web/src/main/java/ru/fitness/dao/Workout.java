@@ -14,7 +14,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -52,18 +51,6 @@ public class Workout implements IWorkout {
     private boolean finished;
 
     private BigDecimal weight;
-
-    private LocalTime totalTime;
-
-    @Override
-    public LocalTime getTotalTime() {
-        return totalTime;
-    }
-
-    @Override
-    public void setTotalTime(LocalTime totalTime) {
-        this.totalTime = totalTime;
-    }
 
     @Override
     public boolean isFinished() {

@@ -16,14 +16,16 @@ import java.util.stream.Collectors;
 public class UserImpl implements User {
     private final WorkoutRepoAdapter workoutRepo;
     private final WUserRepoAdapter userRepo;
+    private final Workout workoutLogic;
     private Integer userId;
 
     public UserImpl(
             WorkoutRepoAdapter workoutRepo,
-            WUserRepoAdapter userRepo
-            ) {
+            WUserRepoAdapter userRepo,
+            Workout workout) {
         this.workoutRepo = workoutRepo;
         this.userRepo = userRepo;
+        this.workoutLogic = workout;
     }
 
     @Override
@@ -33,9 +35,11 @@ public class UserImpl implements User {
 
     @Override
     public List<DWorkout> getWorkouts() {
-        return workoutRepo.findByUserId(userId).stream().map((workout) ->
-                new DWorkout(workout.getId(), workout.getWdate(), workout.getProg().getName(),
-                        workout.isFinished(), workout.getTotalTime())).collect(Collectors.toList());
+        return workoutRepo.findByUserId(userId).stream().map((workout) -> {
+                workoutLogic.setWorkoutId(workout.getId());
+                return new DWorkout(workout.getId(), workout.getWdate(), workout.getProg().getName(),
+                        workout.isFinished(), workoutLogic.getTotalTime());
+        }).collect(Collectors.toList());
     }
 
     @Override

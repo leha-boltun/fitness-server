@@ -12,4 +12,7 @@ public interface TimeStampRepository extends Repository<TimeStamp, Long> {
 
     @Query("select t from TimeStamp t join t.eventType e join t.workout w order by e.eventOrder")
     List<TimeStamp> getFirstTimeStamp(long workoutId, Pageable pageable);
+
+    @Query("select t from TimeStamp t join t.eventType e join t.workout w order by e.eventOrder desc")
+    List<TimeStamp> getLastTimeStamp(long workoutId, Pageable pageable);
 }

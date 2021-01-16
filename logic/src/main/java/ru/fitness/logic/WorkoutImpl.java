@@ -20,6 +20,7 @@ import ru.fitness.dto.DNextEvent;
 import ru.fitness.dto.DTimeStampMain;
 import ru.fitness.dto.DWorkout;
 import ru.fitness.dto.DWorkoutMain;
+import ru.fitness.exception.NoTimestampException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -59,11 +60,21 @@ public class WorkoutImpl implements Workout {
         this.id = id;
     }
 
+    private LocalTime doGetTotalTime() {
+        return
+                timeStampRepo.getLastTimeStamp(id).getWtime()
+                        .minusNanos(timeStampRepo.getFirstTimeStamp(id).getWtime().toNanoOfDay());
+    }
+
     @Override
     public DWorkoutMain getMain() {
         IWorkout workout = workoutRepo.getById(id);
+        LocalTime totalTime = null;
+        try {
+            totalTime = doGetTotalTime();
+        } catch (NoTimestampException ignored) {}
         return new DWorkoutMain(workout.getWuserId(), workout.getWdate(), workout.isFinished(),
-                workout.getWeight(), workout.getTotalTime());
+                workout.getWeight(), totalTime);
     }
 
     @Override
@@ -133,9 +144,6 @@ public class WorkoutImpl implements Workout {
                             newEType.get().getEventCode().equals(EventCode.BEFORE_BEGIN.getName()));
                 } else {
                     workout.setFinished(true);
-                    workout.setTotalTime(
-                            timeStamp.getWtime().minusNanos(timeStampRepo.getFirstEvent(id).getWtime().toNanoOfDay())
-                    );
                     workoutRepo.saveWorkout(workout);
                     return new DNextEvent("", false, false);
                 }
@@ -172,7 +180,7 @@ public class WorkoutImpl implements Workout {
         workout.setFinished(false);
         workoutRepo.saveWorkout(workout);
         return new DWorkout(workout.getId(), workout.getWdate(), workout.getProg().getName(),
-                workout.isFinished(), workout.getTotalTime());
+                workout.isFinished(), null);
     }
 
     @Override
@@ -185,7 +193,10 @@ public class WorkoutImpl implements Workout {
 
     @Override
     public LocalTime getTotalTime() {
-        IWorkout workout = workoutRepo.getById(id);
-        return workout.getTotalTime();
+        try {
+            return doGetTotalTime();
+        } catch (NoTimestampException ex) {
+            return null;
+        }
     }
 }

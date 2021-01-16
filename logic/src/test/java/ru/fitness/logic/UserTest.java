@@ -24,6 +24,7 @@ public class UserTest {
     private WorkoutRepoAdapter workoutRepo;
     private WUserRepoAdapter userRepo;
     private User user;
+    private Workout workout;
     private IWorkout workout1;
     private IWorkout workout2;
 
@@ -31,7 +32,8 @@ public class UserTest {
     public void beforeEach() {
         workoutRepo = Mockito.mock(WorkoutRepoAdapter.class);
         userRepo = Mockito.mock(WUserRepoAdapter.class);
-        user = new UserImpl(workoutRepo, userRepo);
+        workout = Mockito.mock(Workout.class);
+        user = new UserImpl(workoutRepo, userRepo, workout);
         user.setUserId(5);
         workout1 = Mockito.mock(IWorkout.class);
         workout2 = Mockito.mock(IWorkout.class);
@@ -48,7 +50,7 @@ public class UserTest {
         when(prog.getName()).thenReturn("Program name 1");
         when(workout1.getProg()).thenReturn(prog);
         when(workout2.getProg()).thenReturn(prog);
-        when(workout2.getTotalTime()).thenReturn(LocalTime.of(2, 0));
+        when(workout.getTotalTime()).thenReturn(null).thenReturn(LocalTime.of(2, 0));
         when(workoutRepo.findByUserId(5)).thenReturn(Arrays.asList(workout1, workout2));
         assertThat(user.getWorkouts(),
                 equalTo(Arrays.asList(new DWorkout(1L, cur, "Program name 1", false),
