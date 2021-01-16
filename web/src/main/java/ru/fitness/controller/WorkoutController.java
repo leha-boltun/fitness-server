@@ -14,6 +14,7 @@ import ru.fitness.logic.Workout;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -71,5 +72,12 @@ public class WorkoutController {
     public List<DExer> getExers(@PathVariable("id") long id) {
         workout.setWorkoutId(id);
         return workout.getExers();
+    }
+
+    @GetMapping("/workout/{id}/total_time")
+    @Transactional
+    public LocalTime getTotalTime(@PathVariable("id") long id) {
+        workout.setWorkoutId(id);
+        return workout.getTotalTime();
     }
 }

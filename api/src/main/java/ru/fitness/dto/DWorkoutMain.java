@@ -3,6 +3,7 @@ package ru.fitness.dto;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Objects;
 
 public class DWorkoutMain {
@@ -17,6 +18,8 @@ public class DWorkoutMain {
 
     public BigDecimal weight;
 
+    public LocalTime totalTime;
+
     public DWorkoutMain(int wuserId, LocalDate wdate, boolean finished) {
         this.wuserId = wuserId;
         this.wdate = wdate;
@@ -30,27 +33,39 @@ public class DWorkoutMain {
         this.weight = weight;
     }
 
+    public DWorkoutMain(int wuserId, LocalDate wdate, boolean finished, BigDecimal weight, LocalTime totalTime) {
+        this.wuserId = wuserId;
+        this.wdate = wdate;
+        this.finished = finished;
+        this.weight = weight;
+        this.totalTime = totalTime;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DWorkoutMain that = (DWorkoutMain) o;
-        return finished == that.finished &&
+        return wuserId == that.wuserId &&
+                finished == that.finished &&
                 Objects.equals(wdate, that.wdate) &&
-                Objects.equals(weight, that.weight);
+                Objects.equals(weight, that.weight) &&
+                Objects.equals(totalTime, that.totalTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(wdate, finished, weight);
+        return Objects.hash(wuserId, wdate, finished, weight, totalTime);
     }
 
     @Override
     public String toString() {
         return "DWorkoutMain{" +
-                "wdate=" + wdate +
+                "wuserId=" + wuserId +
+                ", wdate=" + wdate +
                 ", finished=" + finished +
                 ", weight=" + weight +
+                ", totalTime=" + totalTime +
                 '}';
     }
 }

@@ -10,4 +10,6 @@ public interface TimeStampRepoAdapter {
     void saveTimeStamp(ITimeStamp timeStamp);
 
     void flush();
+
+    ITimeStamp getFirstEvent(long workoutId);
 }

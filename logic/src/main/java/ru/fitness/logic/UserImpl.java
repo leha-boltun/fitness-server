@@ -35,7 +35,7 @@ public class UserImpl implements User {
     public List<DWorkout> getWorkouts() {
         return workoutRepo.findByUserId(userId).stream().map((workout) ->
                 new DWorkout(workout.getId(), workout.getWdate(), workout.getProg().getName(),
-                        workout.isFinished())).collect(Collectors.toList());
+                        workout.isFinished(), workout.getTotalTime())).collect(Collectors.toList());
     }
 
     @Override

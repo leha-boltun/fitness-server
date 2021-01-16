@@ -2,6 +2,7 @@ package ru.fitness.dto;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Objects;
 
 public class DWorkout {
@@ -17,11 +18,21 @@ public class DWorkout {
     @NotNull
     public boolean finished;
 
-    public DWorkout(long id, LocalDate wdate, @NotNull String programName, boolean finished) {
+    public LocalTime totalTime;
+
+    public DWorkout(long id, LocalDate wdate, String programName, boolean finished) {
         this.id = id;
         this.wdate = wdate;
         this.programName = programName;
         this.finished = finished;
+    }
+
+    public DWorkout(long id, LocalDate wdate, String programName, boolean finished, LocalTime totalTime) {
+        this.id = id;
+        this.wdate = wdate;
+        this.programName = programName;
+        this.finished = finished;
+        this.totalTime = totalTime;
     }
 
     @Override
@@ -31,12 +42,14 @@ public class DWorkout {
         DWorkout dWorkout = (DWorkout) o;
         return id == dWorkout.id &&
                 finished == dWorkout.finished &&
-                Objects.equals(wdate, dWorkout.wdate);
+                Objects.equals(wdate, dWorkout.wdate) &&
+                Objects.equals(programName, dWorkout.programName) &&
+                Objects.equals(totalTime, dWorkout.totalTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, wdate, finished);
+        return Objects.hash(id, wdate, programName, finished, totalTime);
     }
 
     @Override
@@ -44,7 +57,9 @@ public class DWorkout {
         return "DWorkout{" +
                 "id=" + id +
                 ", wdate=" + wdate +
+                ", programName='" + programName + '\'' +
                 ", finished=" + finished +
+                ", totalTime=" + totalTime +
                 '}';
     }
 }

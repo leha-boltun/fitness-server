@@ -2,9 +2,14 @@ package ru.fitness.dao;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Set;
 
 public interface IWorkout {
+    LocalTime getTotalTime();
+
+    void setTotalTime(LocalTime totalTime);
+
     boolean isFinished();
 
     void setFinished(boolean finished);

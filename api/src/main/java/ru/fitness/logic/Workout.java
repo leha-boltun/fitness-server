@@ -7,6 +7,7 @@ import ru.fitness.dto.DWorkout;
 import ru.fitness.dto.DWorkoutMain;
 
 import java.math.BigDecimal;
+import java.time.LocalTime;
 import java.util.List;
 
 public interface Workout {
@@ -25,4 +26,6 @@ public interface Workout {
     DWorkout createWorkout(int userId, long progId);
 
     List<DExer> getExers();
+
+    LocalTime getTotalTime();
 }

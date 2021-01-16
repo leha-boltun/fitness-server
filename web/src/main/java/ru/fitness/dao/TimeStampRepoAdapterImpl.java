@@ -1,5 +1,6 @@
 package ru.fitness.dao;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -34,5 +35,10 @@ public class TimeStampRepoAdapterImpl implements TimeStampRepoAdapter {
     @Override
     public void flush() {
         entityManager.flush();
+    }
+
+    @Override
+    public ITimeStamp getFirstEvent(long workoutId) {
+        return repo.getFirstTimeStamp(workoutId, PageRequest.of(0, 1)).get(0);
     }
 }

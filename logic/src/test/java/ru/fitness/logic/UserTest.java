@@ -12,6 +12,7 @@ import ru.fitness.dto.DUserMain;
 import ru.fitness.dto.DWorkout;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -47,9 +48,11 @@ public class UserTest {
         when(prog.getName()).thenReturn("Program name 1");
         when(workout1.getProg()).thenReturn(prog);
         when(workout2.getProg()).thenReturn(prog);
+        when(workout2.getTotalTime()).thenReturn(LocalTime.of(2, 0));
         when(workoutRepo.findByUserId(5)).thenReturn(Arrays.asList(workout1, workout2));
         assertThat(user.getWorkouts(),
-                equalTo(Arrays.asList(new DWorkout(1L, cur, "Program name 1", false), new DWorkout(2L, cur, "Program name 1", false))));
+                equalTo(Arrays.asList(new DWorkout(1L, cur, "Program name 1", false),
+                        new DWorkout(2L, cur, "Program name 1", false, LocalTime.of(2, 0)))));
         verify(workoutRepo).findByUserId(5);
     }
 

@@ -62,7 +62,8 @@ public class WorkoutImpl implements Workout {
     @Override
     public DWorkoutMain getMain() {
         IWorkout workout = workoutRepo.getById(id);
-        return new DWorkoutMain(workout.getWuserId(), workout.getWdate(), workout.isFinished(), workout.getWeight());
+        return new DWorkoutMain(workout.getWuserId(), workout.getWdate(), workout.isFinished(),
+                workout.getWeight(), workout.getTotalTime());
     }
 
     @Override
@@ -119,7 +120,8 @@ public class WorkoutImpl implements Workout {
             Optional<IEventType> eType = eventTypeRepo.getNextEventType(id);
             if (eType.isPresent()) {
                 ITimeStamp timeStamp = timeStampRepo.createTimeStamp();
-                timeStamp.setWtime(LocalTime.now());
+                LocalTime currentTime = LocalTime.now();
+                timeStamp.setWtime(currentTime);
                 timeStamp.setEventType(eType.get());
                 timeStamp.setWorkout(workout);
                 timeStampRepo.saveTimeStamp(timeStamp);
@@ -131,6 +133,9 @@ public class WorkoutImpl implements Workout {
                             newEType.get().getEventCode().equals(EventCode.BEFORE_BEGIN.getName()));
                 } else {
                     workout.setFinished(true);
+                    workout.setTotalTime(
+                            timeStamp.getWtime().minusNanos(timeStampRepo.getFirstEvent(id).getWtime().toNanoOfDay())
+                    );
                     workoutRepo.saveWorkout(workout);
                     return new DNextEvent("", false, false);
                 }
@@ -166,7 +171,8 @@ public class WorkoutImpl implements Workout {
         workout.setWdate(LocalDate.now());
         workout.setFinished(false);
         workoutRepo.saveWorkout(workout);
-        return new DWorkout(workout.getId(), workout.getWdate(), workout.getProg().getName(), workout.isFinished());
+        return new DWorkout(workout.getId(), workout.getWdate(), workout.getProg().getName(),
+                workout.isFinished(), workout.getTotalTime());
     }
 
     @Override
@@ -175,5 +181,11 @@ public class WorkoutImpl implements Workout {
         return workout.getWorkoutExers().stream()
                 .sorted(Comparator.comparingInt(IWorkoutExer::getExerOrder))
                 .map((exer) -> new DExer(exer.getId(), exer.getExer().getName())).collect(Collectors.toList());
+    }
+
+    @Override
+    public LocalTime getTotalTime() {
+        IWorkout workout = workoutRepo.getById(id);
+        return workout.getTotalTime();
     }
 }
