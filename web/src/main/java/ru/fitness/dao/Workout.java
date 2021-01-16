@@ -1,6 +1,7 @@
 package ru.fitness.dao;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -36,6 +37,9 @@ public class Workout implements IWorkout {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "wuserId", updatable = false)
     private Wuser wuser;
+
+    @Column(updatable = false, insertable = false)
+    private Integer wuserId;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "progId", updatable = false)
@@ -124,5 +128,10 @@ public class Workout implements IWorkout {
     @Override
     public void setWeight(BigDecimal weight) {
         this.weight = weight;
+    }
+
+    @Override
+    public Integer getWuserId() {
+        return wuserId;
     }
 }

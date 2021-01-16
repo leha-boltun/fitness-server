@@ -30,4 +30,6 @@ public interface IWorkout {
     BigDecimal getWeight();
 
     void setWeight(BigDecimal weight);
+
+    Integer getWuserId();
 }

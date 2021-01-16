@@ -7,6 +7,9 @@ import java.util.Objects;
 
 public class DWorkoutMain {
     @NotNull
+    public int wuserId;
+
+    @NotNull
     public LocalDate wdate;
 
     @NotNull
@@ -14,12 +17,14 @@ public class DWorkoutMain {
 
     public BigDecimal weight;
 
-    public DWorkoutMain(LocalDate wdate, boolean finished) {
+    public DWorkoutMain(int wuserId, LocalDate wdate, boolean finished) {
+        this.wuserId = wuserId;
         this.wdate = wdate;
         this.finished = finished;
     }
 
-    public DWorkoutMain(LocalDate wdate, boolean finished, BigDecimal weight) {
+    public DWorkoutMain(int wuserId, LocalDate wdate, boolean finished, BigDecimal weight) {
+        this.wuserId = wuserId;
         this.wdate = wdate;
         this.finished = finished;
         this.weight = weight;

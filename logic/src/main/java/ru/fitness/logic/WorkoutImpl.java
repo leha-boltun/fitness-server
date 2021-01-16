@@ -62,7 +62,7 @@ public class WorkoutImpl implements Workout {
     @Override
     public DWorkoutMain getMain() {
         IWorkout workout = workoutRepo.getById(id);
-        return new DWorkoutMain(workout.getWdate(), workout.isFinished(), workout.getWeight());
+        return new DWorkoutMain(workout.getWuserId(), workout.getWdate(), workout.isFinished(), workout.getWeight());
     }
 
     @Override

@@ -90,9 +90,10 @@ public class WorkoutTest {
 
     @Test
     public void getMain() {
+        when(iWorkout.getWuserId()).thenReturn(77);
         when(workoutRepo.getById(55)).thenReturn(iWorkout);
         workout.setWorkoutId(55);
-        assertThat(workout.getMain(), equalTo(new DWorkoutMain(workoutDate1, false)));
+        assertThat(workout.getMain(), equalTo(new DWorkoutMain(77, workoutDate1, false)));
     }
 
     @Test
