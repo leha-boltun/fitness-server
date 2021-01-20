@@ -5,6 +5,10 @@ import java.time.LocalDate;
 import java.util.Set;
 
 public interface IWorkout {
+    IWorkout getPrevWorkout();
+
+    void setPrevWorkout(IWorkout prevWorkout);
+
     boolean isFinished();
 
     void setFinished(boolean finished);

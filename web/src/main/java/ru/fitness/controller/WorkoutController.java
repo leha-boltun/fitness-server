@@ -61,10 +61,11 @@ public class WorkoutController {
         return workout.processNextEvent();
     }
 
-    @PostMapping("/workout/{userId}/{progId}")
+    @PostMapping("/workout/{userId}/{progId}/{prevId}")
     @Transactional
-    public DWorkout create(@PathVariable("userId") int userId, @PathVariable("progId") long progId) {
-        return workout.createWorkout(userId, progId);
+    public DWorkout create(@PathVariable("userId") int userId, @PathVariable("progId") long progId,
+                           @PathVariable("prevId") long prevProgId) {
+        return workout.createWorkout(userId, progId, prevProgId);
     }
 
     @GetMapping("/workout/{id}/exers")

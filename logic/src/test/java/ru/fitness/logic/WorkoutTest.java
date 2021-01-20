@@ -88,6 +88,8 @@ public class WorkoutTest {
         exer2 = Mockito.mock(IExer.class);
         when(exer1.getName()).thenReturn("Exer name 1");
         when(exer2.getName()).thenReturn("Exer name 2");
+        when(exer1.getId()).thenReturn(1L);
+        when(exer2.getId()).thenReturn(2L);
     }
 
     @Test
@@ -170,7 +172,6 @@ public class WorkoutTest {
         assertThat(workoutArg.getValue(), equalTo(iWorkout));
         verify(timeStampRepo).saveTimeStamp(timeStamp1);
         verify(iWorkout).setFinished(true);
-        ArgumentCaptor<LocalTime> totalTimeArg = ArgumentCaptor.forClass(LocalTime.class);
         verify(workoutRepo).saveWorkout(iWorkout);
     }
 
@@ -192,12 +193,16 @@ public class WorkoutTest {
         when(iWorkout.getWdate()).thenReturn(cur);
         when(iWorkout.getId()).thenReturn(21L);
         when(iWorkout.getProg()).thenReturn(prog);
-        assertThat(workout.createWorkout(5, 66), equalTo(new DWorkout(21L, cur, "Prog name 1", false)));
+        IWorkout iWorkoutPrev = Mockito.mock(IWorkout.class);
+        when(workoutRepo.getLastByProgId(1)).thenReturn(iWorkoutPrev);
+        assertThat(workout.createWorkout(5, 66, 1),
+                equalTo(new DWorkout(21L, cur, "Prog name 1", false)));
         verify(iWorkout).setFinished(false);
         verify(iWorkout).setProg(prog);
         verify(workoutExer1).setExer(exer1);
         verify(workoutExer1).setWorkout(iWorkout);
         verify(workoutExer1).setExerOrder(0);
+        verify(iWorkout).setPrevWorkout(iWorkoutPrev);
     }
 
     @Test
@@ -229,7 +234,22 @@ public class WorkoutTest {
     }
 
     @Test
-    public void getExers() {
+    public void getExersNoPrev() {
+        when(workoutRepo.getById(51)).thenReturn(iWorkout);
+        when(iWorkout.getWorkoutExers()).thenReturn(new HashSet<>(Arrays.asList(workoutExer1, workoutExer2)));
+        when(workoutExer1.getExer()).thenReturn(exer1);
+        when(workoutExer1.getId()).thenReturn(1L);
+        when(workoutExer2.getId()).thenReturn(2L);
+        when(workoutExer1.getExerOrder()).thenReturn(1);
+        when(workoutExer2.getExer()).thenReturn(exer2);
+        when(workoutExer2.getExerOrder()).thenReturn(5);
+        workout.setWorkoutId(51);
+        assertThat(workout.getExers(), equalTo(Arrays.asList(new DExer(1L, "Exer name 1"),
+                new DExer(2L, "Exer name 2"))));
+    }
+
+    @Test
+    public void getExersPrev() {
         when(workoutRepo.getById(51)).thenReturn(iWorkout);
         when(iWorkout.getWorkoutExers()).thenReturn(new HashSet<>(Arrays.asList(workoutExer1, workoutExer2)));
         when(workoutExer1.getExer()).thenReturn(exer1);
@@ -238,7 +258,25 @@ public class WorkoutTest {
         when(workoutExer2.getExer()).thenReturn(exer2);
         when(workoutExer2.getId()).thenReturn(2L);
         when(workoutExer2.getExerOrder()).thenReturn(5);
+
+        IExer exer4 = Mockito.mock(IExer.class);
+        when(exer4.getName()).thenReturn("Exer name 4");
+        when(exer4.getId()).thenReturn(16L);
+
+        IWorkout workout2 = Mockito.mock(IWorkout.class);
+        when(iWorkout.getPrevWorkout()).thenReturn(workout2);
+        IWorkoutExer workoutExer3 = Mockito.mock(IWorkoutExer.class);
+        when(workoutExer3.getExer()).thenReturn(exer4);
+        when(workoutExer3.getId()).thenReturn(7L);
+        when(workoutExer3.getExerOrder()).thenReturn(10);
+        IWorkoutExer workoutExer4 = Mockito.mock(IWorkoutExer.class);
+        when(workoutExer4.getExer()).thenReturn(exer1);
+        when(workoutExer4.getId()).thenReturn(9L);
+        when(workoutExer4.getExerOrder()).thenReturn(2);
+        when(workout2.getWorkoutExers()).thenReturn(new HashSet<>(Arrays.asList(workoutExer3, workoutExer4)));
+
         workout.setWorkoutId(51);
-        assertThat(workout.getExers(), equalTo(Arrays.asList(new DExer(1, "Exer name 1"), new DExer(2, "Exer name 2"))));
+        assertThat(workout.getExers(), equalTo(Arrays.asList(new DExer(1L, "Exer name 1", 9L),
+                new DExer(2L, "Exer name 2"), new DExer("Exer name 4", 7L))));
     }
 }

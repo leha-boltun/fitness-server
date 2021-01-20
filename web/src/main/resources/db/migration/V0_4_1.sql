@@ -1,0 +1,1 @@
+alter table workout add column prev_workout_id bigint references workout(id) on delete cascade;

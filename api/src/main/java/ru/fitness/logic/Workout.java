@@ -23,7 +23,7 @@ public interface Workout {
 
     DNextEvent processNextEvent();
 
-    DWorkout createWorkout(int userId, long progId);
+    DWorkout createWorkout(int userId, long progId, long prevId);
 
     List<DExer> getExers();
 

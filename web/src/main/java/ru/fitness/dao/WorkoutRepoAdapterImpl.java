@@ -1,5 +1,6 @@
 package ru.fitness.dao;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -21,6 +22,11 @@ public class WorkoutRepoAdapterImpl implements WorkoutRepoAdapter {
     @Override
     public List<IWorkout> findByUserId(int userId) {
         return new ArrayList<>(workoutRepo.findByUserId(userId));
+    }
+
+    @Override
+    public IWorkout getLastByProgId(long progId) {
+        return workoutRepo.getLastByProgId(progId, PageRequest.of(0, 1)).get(0);
     }
 
     @Override

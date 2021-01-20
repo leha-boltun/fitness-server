@@ -29,8 +29,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -158,7 +160,7 @@ public class WorkoutImpl implements Workout {
     }
 
     @Override
-    public DWorkout createWorkout(int userId, long progId) {
+    public DWorkout createWorkout(int userId, long progId, long prevId) {
         IWorkout workout = workoutRepo.createWorkout();
         workout.setWUser(userRepo.getUserRef(userId));
         IProg prog = progRepo.getProg(progId);
@@ -174,6 +176,9 @@ public class WorkoutImpl implements Workout {
                 return workoutExer;
             }
         ).collect(Collectors.toSet());
+        if (prevId != -1) {
+            workout.setPrevWorkout(workoutRepo.getLastByProgId(prevId));
+        }
         workout.setWorkoutExers(workoutExers);
         workout.setProg(prog);
         workout.setWdate(LocalDate.now());
@@ -185,10 +190,60 @@ public class WorkoutImpl implements Workout {
 
     @Override
     public List<DExer> getExers() {
+        class ItemAndOrder {
+            public final DExer exer;
+            public final int order;
+
+            public int getOrder() {
+                return order;
+            }
+
+            ItemAndOrder(DExer exer, int order) {
+                this.exer = exer;
+                this.order = order;
+            }
+        }
+
         IWorkout workout = workoutRepo.getById(id);
-        return workout.getWorkoutExers().stream()
-                .sorted(Comparator.comparingInt(IWorkoutExer::getExerOrder))
-                .map((exer) -> new DExer(exer.getId(), exer.getExer().getName())).collect(Collectors.toList());
+        Map<Long, IWorkoutExer> curExers =
+                workout.getWorkoutExers().stream().collect(Collectors.toMap(it -> it.getExer().getId(), Function.identity()));
+        Map<Long, IWorkoutExer> prevExers = (workout.getPrevWorkout() == null) ? Collections.emptyMap() :
+                workout.getPrevWorkout().getWorkoutExers().stream()
+                        .collect(Collectors.toMap(it -> it.getExer().getId(), Function.identity()));
+        List<ItemAndOrder> result = new ArrayList<>(curExers.size());
+
+        curExers.forEach(
+                (k, v) -> {
+                    if (prevExers.containsKey(k)) {
+                        result.add(
+                                new ItemAndOrder(
+                                        new DExer(v.getId(), v.getExer().getName(), prevExers.remove(k).getId()),
+                                        v.getExerOrder()
+                                )
+                        );
+                    } else {
+                        result.add(
+                                new ItemAndOrder(
+                                        new DExer(v.getId(), v.getExer().getName()),
+                                        v.getExerOrder()
+                                )
+                        );
+                    }
+                }
+        );
+
+        int addOrder = result.stream().max(Comparator.comparingInt(ItemAndOrder::getOrder))
+                .orElse(new ItemAndOrder(null, 0)).getOrder();
+
+        prevExers.forEach((k, v) -> result.add(
+                new ItemAndOrder(
+                        new DExer(v.getExer().getName(), v.getId()),
+                        v.getExerOrder() + addOrder
+                )
+        ));
+
+        return result.stream().sorted(Comparator.comparingInt(ItemAndOrder::getOrder)).map(it -> it.exer)
+                .collect(Collectors.toList());
     }
 
     @Override

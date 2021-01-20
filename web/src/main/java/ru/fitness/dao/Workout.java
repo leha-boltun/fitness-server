@@ -48,9 +48,22 @@ public class Workout implements IWorkout {
     @OneToMany(mappedBy = "workout", cascade = CascadeType.ALL)
     private Set<WorkoutExer> workoutExers;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Workout prevWorkout;
+
     private boolean finished;
 
     private BigDecimal weight;
+
+    @Override
+    public IWorkout getPrevWorkout() {
+        return prevWorkout;
+    }
+
+    @Override
+    public void setPrevWorkout(IWorkout prevWorkout) {
+        this.prevWorkout = (Workout) prevWorkout;
+    }
 
     @Override
     public boolean isFinished() {
