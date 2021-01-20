@@ -1,6 +1,7 @@
 package ru.fitness.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -80,5 +81,12 @@ public class WorkoutController {
     public LocalTime getTotalTime(@PathVariable("id") long id) {
         workout.setWorkoutId(id);
         return workout.getTotalTime();
+    }
+
+    @PatchMapping("/workout/{id}/weight")
+    @Transactional
+    public void editWeight(@PathVariable("id") long id, @RequestBody BigDecimal weight) {
+        workout.setWorkoutId(id);
+        workout.setWeight(weight);
     }
 }
