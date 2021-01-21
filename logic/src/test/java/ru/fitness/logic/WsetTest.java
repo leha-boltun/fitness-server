@@ -30,10 +30,22 @@ public class WsetTest {
         when(workoutExerRepo.getExerRef(100)).thenReturn(workoutExer);
         IWset iWset = Mockito.mock(IWset.class);
         when(wsetRepo.createWset()).thenReturn(iWset);
-        wset.createWset(100, new DWset("100", "5"));
+        wset.createWset(100, new DWset("100", "5", 1));
         verify(iWset).setWeight("100");
         verify(iWset).setCount("5");
         verify(iWset).setWorkoutExer(workoutExer);
+        verify(wsetRepo).saveWset(iWset);
+    }
+
+    @Test
+    void editWset() {
+        IWorkoutExer workoutExer = Mockito.mock(IWorkoutExer.class);
+        when(workoutExerRepo.getExerRef(100)).thenReturn(workoutExer);
+        IWset iWset = Mockito.mock(IWset.class);
+        when(wsetRepo.getById(100)).thenReturn(iWset);
+        wset.editWset(new DWset("100", "5", 100));
+        verify(iWset).setWeight("100");
+        verify(iWset).setCount("5");
         verify(wsetRepo).saveWset(iWset);
     }
 }

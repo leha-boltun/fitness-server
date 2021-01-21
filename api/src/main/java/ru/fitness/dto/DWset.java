@@ -5,6 +5,9 @@ import java.util.Objects;
 
 public class DWset {
     @NotNull
+    public long id;
+
+    @NotNull
     public String weight;
 
     @NotNull
@@ -13,9 +16,10 @@ public class DWset {
     public DWset() {
     }
 
-    public DWset(String weight, String count) {
+    public DWset(String weight, String count, long id) {
         this.weight = weight;
         this.count = count;
+        this.id = id;
     }
 
     @Override
@@ -23,19 +27,21 @@ public class DWset {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DWset dWset = (DWset) o;
-        return Objects.equals(weight, dWset.weight) &&
+        return id == dWset.id &&
+                Objects.equals(weight, dWset.weight) &&
                 Objects.equals(count, dWset.count);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(weight, count);
+        return Objects.hash(id, weight, count);
     }
 
     @Override
     public String toString() {
         return "DWset{" +
-                "weight='" + weight + '\'' +
+                "id=" + id +
+                ", weight='" + weight + '\'' +
                 ", count='" + count + '\'' +
                 '}';
     }

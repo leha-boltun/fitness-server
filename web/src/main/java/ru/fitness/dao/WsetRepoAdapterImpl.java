@@ -23,4 +23,16 @@ public class WsetRepoAdapterImpl implements WsetRepoAdapter {
     public void saveWset(IWset wset) {
         entityManager.persist(wset);
     }
+
+    @Override
+    public IWset getById(long id) {
+        return wsetRepository.getById(id);
+    }
+
+    @Override
+    public int getMaxOrder(long workoutExerId) {
+        return (int) entityManager
+                .createQuery("select coalesce(max(w.wsetOrder), 0) from Wset w join w.workoutExer e where e.id = :id")
+                .setParameter("id", workoutExerId).getSingleResult();
+    }
 }

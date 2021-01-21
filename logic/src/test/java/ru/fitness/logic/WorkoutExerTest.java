@@ -38,9 +38,13 @@ public class WorkoutExerTest {
         when(wset2.getWeight()).thenReturn("59");
         when(wset1.getCount()).thenReturn("5");
         when(wset2.getCount()).thenReturn("6");
+        when(wset1.getId()).thenReturn(1L);
+        when(wset2.getId()).thenReturn(2L);
         when(iWorkoutExer.getWsets()).thenReturn(new HashSet<>(Arrays.asList(wset2, wset1)));
 
         workoutExer.setId(57);
-        assertThat(workoutExer.getWsets(), equalTo(Arrays.asList(new DWset("56", "5"), new DWset("59", "6"))));
+        assertThat(workoutExer.getWsets(), equalTo(Arrays.asList(
+                new DWset("56", "5", 1L),
+                new DWset("59", "6", 2L))));
     }
 }

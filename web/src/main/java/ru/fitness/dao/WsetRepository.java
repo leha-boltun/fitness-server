@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface WsetRepository extends Repository<Wset, Long> {
     List<Wset> getByWorkoutExerId(long id);
+
+    Wset getById(long id);
 }

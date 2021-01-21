@@ -31,6 +31,6 @@ public class WorkoutExerImpl implements WorkoutExer {
     public List<DWset> getWsets() {
         IWorkoutExer workoutExer = workoutExerRepoAdapter.getById(id);
         return workoutExer.getWsets().stream().sorted(Comparator.comparingInt(IWset::getWsetOrder))
-                .map(wset -> new DWset(wset.getWeight(), wset.getCount())).collect(Collectors.toList());
+                .map(wset -> new DWset(wset.getWeight(), wset.getCount(), wset.getId())).collect(Collectors.toList());
     }
 }

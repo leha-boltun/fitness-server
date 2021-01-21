@@ -6,4 +6,6 @@ public interface Wset {
     void setId(long id);
 
     void createWset(long workoutExerId, DWset data);
+
+    void editWset(DWset data);
 }

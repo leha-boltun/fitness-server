@@ -31,6 +31,16 @@ public class WsetImpl implements Wset {
         wset.setWorkoutExer(workoutExerRepo.getExerRef(workoutExerId));
         wset.setWeight(data.weight);
         wset.setCount(data.count);
+        wset.setWsetOrder(wsetRepo.getMaxOrder(workoutExerId) + 1);
+        wsetRepo.saveWset(wset);
+    }
+
+    @Override
+    public void editWset(DWset data) {
+        this.id = data.id;
+        IWset wset = wsetRepo.getById(id);
+        wset.setWeight(data.weight);
+        wset.setCount(data.count);
         wsetRepo.saveWset(wset);
     }
 }

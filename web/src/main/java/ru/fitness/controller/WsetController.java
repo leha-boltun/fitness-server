@@ -2,6 +2,7 @@ package ru.fitness.controller;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.fitness.dto.DWset;
@@ -21,5 +22,11 @@ public class WsetController {
     @Transactional
     public void createWset(@PathVariable("workoutExerId") long workoutExerId, @RequestBody DWset data) {
         wset.createWset(workoutExerId, data);
+    }
+
+    @PutMapping("/wset/edit")
+    @Transactional
+    public void editWset(@RequestBody DWset data) {
+        wset.editWset(data);
     }
 }
