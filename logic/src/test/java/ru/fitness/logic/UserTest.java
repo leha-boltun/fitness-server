@@ -1,5 +1,6 @@
 package ru.fitness.logic;
 
+import com.google.common.collect.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -8,6 +9,7 @@ import ru.fitness.dao.IWorkout;
 import ru.fitness.dao.IWuser;
 import ru.fitness.dao.WUserRepoAdapter;
 import ru.fitness.dao.WorkoutRepoAdapter;
+import ru.fitness.dto.DProg;
 import ru.fitness.dto.DUserMain;
 import ru.fitness.dto.DWorkout;
 
@@ -65,5 +67,21 @@ public class UserTest {
         when(userRepo.getUser(5)).thenReturn(wuser);
         user.setUserId(5);
         assertThat(user.getMain(), equalTo(new DUserMain("user1")));
+    }
+
+    @Test
+    public void getProgsTest() {
+        IWuser wuser = Mockito.mock(IWuser.class);
+        when(userRepo.getUser(7)).thenReturn(wuser);
+        IProg prog1 = Mockito.mock(IProg.class);
+        IProg prog2 = Mockito.mock(IProg.class);
+        when(prog1.getName()).thenReturn("prog1");
+        when(prog1.getId()).thenReturn(1L);
+        when(prog2.getName()).thenReturn("prog2");
+        when(prog2.getId()).thenReturn(2L);
+        when(wuser.getProgs()).thenReturn(Sets.newHashSet(prog2, prog1));
+        user.setUserId(7);
+        assertThat(user.getProgs(),
+                equalTo(Arrays.asList(new DProg(1, "prog1"), new DProg(2, "prog2"))));
     }
 }
