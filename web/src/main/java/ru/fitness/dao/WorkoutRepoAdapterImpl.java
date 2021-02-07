@@ -26,7 +26,8 @@ public class WorkoutRepoAdapterImpl implements WorkoutRepoAdapter {
 
     @Override
     public IWorkout getLastByProgId(long progId) {
-        return workoutRepo.getLastByProgId(progId, PageRequest.of(0, 1)).get(0);
+        List<Workout> workouts = workoutRepo.getLastByProgId(progId, PageRequest.of(0, 1));
+        return (workouts.isEmpty() ? null: workouts.get(0));
     }
 
     @Override

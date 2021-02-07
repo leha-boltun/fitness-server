@@ -25,4 +25,9 @@ public class ProgRepoAdapterImpl implements ProgRepoAdapter {
     public List<IProg> getProgs() {
         return new ArrayList<>(progRepo.findAll());
     }
+
+    @Override
+    public List<IProg> getActualProgsByWuserId(int wuserId) {
+        return new ArrayList<>(progRepo.getActualProgsByWuserId(wuserId));
+    }
 }

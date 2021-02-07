@@ -1,11 +1,16 @@
 package ru.fitness.dao;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
@@ -26,13 +31,42 @@ public class Prog implements IProg {
     @OneToMany(mappedBy = "prog", cascade = CascadeType.ALL)
     private Set<ProgExer> progExers;
 
-    @ManyToMany(mappedBy = "progs")
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "WuserProg",
+            joinColumns = { @JoinColumn(name = "progId") },
+            inverseJoinColumns = { @JoinColumn(name = "wuserId") }
+    )
     private Set<Wuser> wusers;
 
     @Version
     private int version;
 
     private String name;
+
+    private boolean isPrevious;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false, name = "prevProgId", updatable = false)
+    private Prog prevProg;
+
+    @Column(updatable = false, insertable = false)
+    private Integer prevProgId;
+
+    @Override
+    public Integer getPrevProgId() {
+        return prevProgId;
+    }
+
+    @Override
+    public boolean isPrevious() {
+        return isPrevious;
+    }
+
+    @Override
+    public IProg getPrevProg() {
+        return prevProg;
+    }
 
     @Override
     public Set<IProgExer> getProgExers() {

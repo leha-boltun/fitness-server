@@ -3,6 +3,12 @@ package ru.fitness.dao;
 import java.util.Set;
 
 public interface IProg {
+    Integer getPrevProgId();
+
+    boolean isPrevious();
+
+    IProg getPrevProg();
+
     Set<IProgExer> getProgExers();
 
     Long getId();

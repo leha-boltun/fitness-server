@@ -1,12 +1,12 @@
 package ru.fitness.logic;
 
-import com.google.common.collect.Sets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import ru.fitness.dao.IProg;
 import ru.fitness.dao.IWorkout;
 import ru.fitness.dao.IWuser;
+import ru.fitness.dao.ProgRepoAdapter;
 import ru.fitness.dao.WUserRepoAdapter;
 import ru.fitness.dao.WorkoutRepoAdapter;
 import ru.fitness.dto.DProg;
@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 public class UserTest {
     private WorkoutRepoAdapter workoutRepo;
     private WUserRepoAdapter userRepo;
+    private ProgRepoAdapter progRepo;
     private User user;
     private Workout workout;
     private IWorkout workout1;
@@ -35,7 +36,8 @@ public class UserTest {
         workoutRepo = Mockito.mock(WorkoutRepoAdapter.class);
         userRepo = Mockito.mock(WUserRepoAdapter.class);
         workout = Mockito.mock(Workout.class);
-        user = new UserImpl(workoutRepo, userRepo, workout);
+        progRepo = Mockito.mock(ProgRepoAdapter.class);
+        user = new UserImpl(workoutRepo, userRepo, workout, progRepo);
         user.setUserId(5);
         workout1 = Mockito.mock(IWorkout.class);
         workout2 = Mockito.mock(IWorkout.class);
@@ -71,15 +73,13 @@ public class UserTest {
 
     @Test
     public void getProgsTest() {
-        IWuser wuser = Mockito.mock(IWuser.class);
-        when(userRepo.getUser(7)).thenReturn(wuser);
         IProg prog1 = Mockito.mock(IProg.class);
         IProg prog2 = Mockito.mock(IProg.class);
         when(prog1.getName()).thenReturn("prog1");
         when(prog1.getId()).thenReturn(1L);
         when(prog2.getName()).thenReturn("prog2");
         when(prog2.getId()).thenReturn(2L);
-        when(wuser.getProgs()).thenReturn(Sets.newHashSet(prog2, prog1));
+        when(progRepo.getActualProgsByWuserId(7)).thenReturn(Arrays.asList(prog2, prog1));
         user.setUserId(7);
         assertThat(user.getProgs(),
                 equalTo(Arrays.asList(new DProg(1, "prog1"), new DProg(2, "prog2"))));

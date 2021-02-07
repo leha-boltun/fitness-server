@@ -177,7 +177,11 @@ public class WorkoutImpl implements Workout {
             }
         ).collect(Collectors.toSet());
         if (prevId != -1) {
-            workout.setPrevWorkout(workoutRepo.getLastByProgId(prevId));
+            IWorkout prevWorkout = workoutRepo.getLastByProgId(prevId);
+            if (prevWorkout == null) {
+                prevWorkout = workoutRepo.getLastByProgId(progRepo.getProg(prevId).getPrevProgId());
+            }
+            workout.setPrevWorkout(prevWorkout);
         }
         workout.setWorkoutExers(workoutExers);
         workout.setProg(prog);
