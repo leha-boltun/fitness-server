@@ -75,8 +75,21 @@ public class WorkoutImpl implements Workout {
         try {
             totalTime = doGetTotalTime();
         } catch (NoTimestampException ignored) {}
+        BigDecimal weightDiffSame = null;
+        if (workout.getPrevWorkout() != null &&
+                workout.getWeight() != null &&
+                workout.getPrevWorkout().getWeight() != null) {
+            weightDiffSame = workout.getWeight().subtract(workout.getPrevWorkout().getWeight());
+        }
+        BigDecimal weightDiff = null;
+        if (workout.getWeight() != null) {
+            IWorkout prevWorkoutOther = workoutRepo.getPrevById(id);
+            if (prevWorkoutOther != null && prevWorkoutOther.getWeight() != null) {
+                weightDiff = workout.getWeight().subtract(prevWorkoutOther.getWeight());
+            }
+        }
         return new DWorkoutMain(workout.getWuserId(), workout.getWdate(), workout.isFinished(),
-                workout.getWeight(), totalTime);
+                workout.getWeight(), totalTime, weightDiff, weightDiffSame);
     }
 
     @Override

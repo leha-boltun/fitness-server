@@ -16,4 +16,7 @@ public interface WorkoutRepository extends Repository<Workout, Long> {
 
     @Query("select e from Workout e where e.prog.id = :progId order by e.wdate desc, e.id desc")
     List<Workout> getLastByProgId(long progId, Pageable pageable);
+
+    @Query("select e from Workout e where e.wdate <= (select e2.wdate from Workout e2 where e2.id = :workoutId) and e.wuserId = (select e2.wuserId from Workout e2 where e2.id = :workoutId) and e.id <> :workoutId order by e.wdate desc, e.id desc")
+    List<Workout> getPrevById(long workoutId, Pageable pageable);
 }

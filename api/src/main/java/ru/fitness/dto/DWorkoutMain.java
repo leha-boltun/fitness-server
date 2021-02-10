@@ -18,6 +18,10 @@ public class DWorkoutMain {
 
     public BigDecimal weight;
 
+    public BigDecimal weightDiff;
+
+    public BigDecimal weightDiffSame;
+
     public LocalTime totalTime;
 
     public DWorkoutMain(int wuserId, LocalDate wdate, boolean finished) {
@@ -33,12 +37,16 @@ public class DWorkoutMain {
         this.weight = weight;
     }
 
-    public DWorkoutMain(int wuserId, LocalDate wdate, boolean finished, BigDecimal weight, LocalTime totalTime) {
+    public DWorkoutMain(int wuserId, LocalDate wdate, boolean finished,
+                        BigDecimal weight, LocalTime totalTime,
+                        BigDecimal weightDiff, BigDecimal weightDiffSame) {
         this.wuserId = wuserId;
         this.wdate = wdate;
         this.finished = finished;
         this.weight = weight;
         this.totalTime = totalTime;
+        this.weightDiff = weightDiff;
+        this.weightDiffSame = weightDiffSame;
     }
 
     @Override

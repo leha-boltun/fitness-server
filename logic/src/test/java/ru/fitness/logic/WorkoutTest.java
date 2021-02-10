@@ -100,10 +100,17 @@ public class WorkoutTest {
         when(workoutRepo.getById(55)).thenReturn(iWorkout);
         when(timeStampRepo.getFirstTimeStamp(55)).thenThrow(NoTimestampException.class);
         when(timeStampRepo.getLastTimeStamp(55)).thenThrow(NoTimestampException.class);
+        IWorkout workout2 = Mockito.mock(IWorkout.class);
+        when(iWorkout.getPrevWorkout()).thenReturn(workout2);
+        when(workout2.getWeight()).thenReturn(new BigDecimal("1.2"));
+        IWorkout workout3 = Mockito.mock(IWorkout.class);
+        when(workoutRepo.getPrevById(55)).thenReturn(workout3);
+        when(workout3.getWeight()).thenReturn(new BigDecimal("1.0"));
         workout.setWorkoutId(55);
+
         assertThat(workout.getMain(),
                 equalTo(new DWorkoutMain(77, workoutDate1, true,
-                        new BigDecimal("2.4"), null)));
+                        new BigDecimal("2.4"), null, new BigDecimal("1.4"), new BigDecimal("1.2"))));
     }
 
     @Test

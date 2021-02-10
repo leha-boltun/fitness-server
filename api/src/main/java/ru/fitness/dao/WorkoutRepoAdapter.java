@@ -14,4 +14,6 @@ public interface WorkoutRepoAdapter {
     void saveWorkout(IWorkout workout);
 
     IWorkout getById(long id);
+
+    IWorkout getPrevById(long workoutId);
 }

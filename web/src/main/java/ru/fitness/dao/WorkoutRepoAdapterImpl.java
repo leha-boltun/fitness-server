@@ -49,4 +49,10 @@ public class WorkoutRepoAdapterImpl implements WorkoutRepoAdapter {
     public IWorkout getById(long id) {
         return workoutRepo.getById(id);
     }
+
+    @Override
+    public IWorkout getPrevById(long workoutId) {
+        List<Workout> prevWorkoutList = workoutRepo.getPrevById(workoutId, PageRequest.of(0, 1));
+        return (prevWorkoutList.isEmpty()) ? null : prevWorkoutList.get(0);
+    }
 }
