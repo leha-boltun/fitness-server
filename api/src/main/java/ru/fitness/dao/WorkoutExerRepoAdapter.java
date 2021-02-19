@@ -8,4 +8,6 @@ public interface WorkoutExerRepoAdapter {
     void saveExer(IWorkoutExer exer);
 
     IWorkoutExer getById(long id);
+
+    IWorkoutExer getPrevExer(long id);
 }

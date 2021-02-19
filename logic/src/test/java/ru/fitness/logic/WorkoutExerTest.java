@@ -6,6 +6,7 @@ import org.mockito.Mockito;
 import ru.fitness.dao.IWorkoutExer;
 import ru.fitness.dao.IWset;
 import ru.fitness.dao.WorkoutExerRepoAdapter;
+import ru.fitness.dto.DWSetsAndPrevId;
 import ru.fitness.dto.DWset;
 
 import java.util.Arrays;
@@ -18,16 +19,15 @@ import static org.mockito.Mockito.when;
 public class WorkoutExerTest {
     private WorkoutExerRepoAdapter workoutExerRepo;
     private WorkoutExerImpl workoutExer;
+    private IWorkoutExer iWorkoutExer;
 
     @BeforeEach
     public void beforeEach() {
         workoutExerRepo = Mockito.mock(WorkoutExerRepoAdapter.class);
         workoutExer = new WorkoutExerImpl(workoutExerRepo);
-    }
 
-    @Test
-    public void getWSets() {
-        IWorkoutExer iWorkoutExer = Mockito.mock(IWorkoutExer.class);
+        iWorkoutExer = Mockito.mock(IWorkoutExer.class);
+
         when(workoutExerRepo.getById(57)).thenReturn(iWorkoutExer);
 
         IWset wset1 = Mockito.mock(IWset.class);
@@ -41,10 +41,26 @@ public class WorkoutExerTest {
         when(wset1.getId()).thenReturn(1L);
         when(wset2.getId()).thenReturn(2L);
         when(iWorkoutExer.getWsets()).thenReturn(new HashSet<>(Arrays.asList(wset2, wset1)));
+    }
+
+    @Test
+    public void getWSets() {
+        when(workoutExerRepo.getById(57)).thenReturn(iWorkoutExer);
 
         workoutExer.setId(57);
         assertThat(workoutExer.getWsets(), equalTo(Arrays.asList(
                 new DWset("56", "5", 1L),
                 new DWset("59", "6", 2L))));
+    }
+
+    @Test
+    public void getPrevWsets() {
+        when(workoutExerRepo.getPrevExer(57)).thenReturn(iWorkoutExer);
+        when(iWorkoutExer.getId()).thenReturn(57L);
+
+        workoutExer.setId(57);
+        assertThat(workoutExer.getWsetsAndPrevId(), equalTo(new DWSetsAndPrevId(Arrays.asList(
+                new DWset("56", "5", 1L),
+                new DWset("59", "6", 2L)), 57L)));
     }
 }

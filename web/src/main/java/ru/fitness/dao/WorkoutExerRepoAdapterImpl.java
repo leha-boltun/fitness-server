@@ -1,8 +1,10 @@
 package ru.fitness.dao;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 @Service
 public class WorkoutExerRepoAdapterImpl implements WorkoutExerRepoAdapter {
@@ -32,5 +34,15 @@ public class WorkoutExerRepoAdapterImpl implements WorkoutExerRepoAdapter {
     @Override
     public IWorkoutExer getById(long id) {
         return workoutExerRepo.getById(id);
+    }
+
+    @Override
+    public IWorkoutExer getPrevExer(long id) {
+        List<WorkoutExer> exers = workoutExerRepo.getPrevExer(id, PageRequest.of(0, 1));
+        if (exers.isEmpty()) {
+            return null;
+        } else {
+            return exers.get(0);
+        }
     }
 }

@@ -6,8 +6,10 @@ import org.springframework.stereotype.Component;
 import ru.fitness.dao.IWorkoutExer;
 import ru.fitness.dao.IWset;
 import ru.fitness.dao.WorkoutExerRepoAdapter;
+import ru.fitness.dto.DWSetsAndPrevId;
 import ru.fitness.dto.DWset;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,10 +29,24 @@ public class WorkoutExerImpl implements WorkoutExer {
         this.id = id;
     }
 
+    private List<DWset> doGetWsets(IWorkoutExer workoutExer) {
+        return workoutExer.getWsets().stream().sorted(Comparator.comparingInt(IWset::getWsetOrder))
+                .map(wset -> new DWset(wset.getWeight(), wset.getCount(), wset.getId())).collect(Collectors.toList());
+    }
+
     @Override
     public List<DWset> getWsets() {
         IWorkoutExer workoutExer = workoutExerRepoAdapter.getById(id);
-        return workoutExer.getWsets().stream().sorted(Comparator.comparingInt(IWset::getWsetOrder))
-                .map(wset -> new DWset(wset.getWeight(), wset.getCount(), wset.getId())).collect(Collectors.toList());
+        return doGetWsets(workoutExer);
+    }
+
+    @Override
+    public DWSetsAndPrevId getWsetsAndPrevId() {
+        IWorkoutExer workoutExer = workoutExerRepoAdapter.getPrevExer(id);
+        if (workoutExer != null) {
+            return new DWSetsAndPrevId(doGetWsets(workoutExer), workoutExer.getId());
+        } else {
+            return new DWSetsAndPrevId(Collections.emptyList(), null);
+        }
     }
 }
