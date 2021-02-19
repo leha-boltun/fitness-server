@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.fitness.dao.IWorkoutExer;
 import ru.fitness.dao.IWset;
 import ru.fitness.dao.WorkoutExerRepoAdapter;
-import ru.fitness.dto.DWSetsAndPrevId;
+import ru.fitness.dto.DWSetsPrev;
 import ru.fitness.dto.DWset;
 
 import java.util.Collections;
@@ -41,12 +41,13 @@ public class WorkoutExerImpl implements WorkoutExer {
     }
 
     @Override
-    public DWSetsAndPrevId getWsetsAndPrevId() {
+    public DWSetsPrev getWsetsAndPrevId() {
         IWorkoutExer workoutExer = workoutExerRepoAdapter.getPrevExer(id);
         if (workoutExer != null) {
-            return new DWSetsAndPrevId(doGetWsets(workoutExer), workoutExer.getId());
+            return new DWSetsPrev(doGetWsets(workoutExer), workoutExer.getId(),
+                    workoutExer.getWorkout().getWdate());
         } else {
-            return new DWSetsAndPrevId(Collections.emptyList(), null);
+            return new DWSetsPrev(Collections.emptyList(), null, null);
         }
     }
 }

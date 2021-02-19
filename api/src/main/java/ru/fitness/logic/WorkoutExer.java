@@ -1,6 +1,6 @@
 package ru.fitness.logic;
 
-import ru.fitness.dto.DWSetsAndPrevId;
+import ru.fitness.dto.DWSetsPrev;
 import ru.fitness.dto.DWset;
 
 import java.util.List;
@@ -10,5 +10,5 @@ public interface WorkoutExer {
 
     List<DWset> getWsets();
 
-    DWSetsAndPrevId getWsetsAndPrevId();
+    DWSetsPrev getWsetsAndPrevId();
 }

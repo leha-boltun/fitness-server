@@ -3,12 +3,14 @@ package ru.fitness.logic;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import ru.fitness.dao.IWorkout;
 import ru.fitness.dao.IWorkoutExer;
 import ru.fitness.dao.IWset;
 import ru.fitness.dao.WorkoutExerRepoAdapter;
-import ru.fitness.dto.DWSetsAndPrevId;
+import ru.fitness.dto.DWSetsPrev;
 import ru.fitness.dto.DWset;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -57,10 +59,13 @@ public class WorkoutExerTest {
     public void getPrevWsets() {
         when(workoutExerRepo.getPrevExer(57)).thenReturn(iWorkoutExer);
         when(iWorkoutExer.getId()).thenReturn(57L);
+        IWorkout workout = Mockito.mock(IWorkout.class);
+        when(workout.getWdate()).thenReturn(LocalDate.of(2020, 1, 2));
+        when(iWorkoutExer.getWorkout()).thenReturn(workout);
 
         workoutExer.setId(57);
-        assertThat(workoutExer.getWsetsAndPrevId(), equalTo(new DWSetsAndPrevId(Arrays.asList(
+        assertThat(workoutExer.getWsetsAndPrevId(), equalTo(new DWSetsPrev(Arrays.asList(
                 new DWset("56", "5", 1L),
-                new DWset("59", "6", 2L)), 57L)));
+                new DWset("59", "6", 2L)), 57L, LocalDate.of(2020, 1, 2))));
     }
 }

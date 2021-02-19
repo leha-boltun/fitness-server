@@ -3,7 +3,7 @@ package ru.fitness.controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import ru.fitness.dto.DWSetsAndPrevId;
+import ru.fitness.dto.DWSetsPrev;
 import ru.fitness.dto.DWset;
 import ru.fitness.logic.WorkoutExer;
 
@@ -27,7 +27,7 @@ public class WorkoutExerController {
 
     @GetMapping("/workoutexer/{id}/previd")
     @Transactional
-    public DWSetsAndPrevId getWSetsAndPrevId(@PathVariable("id") long id) {
+    public DWSetsPrev getWSetsPrev(@PathVariable("id") long id) {
         workoutExer.setId(id);
         return workoutExer.getWsetsAndPrevId();
     }
