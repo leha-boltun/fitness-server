@@ -13,9 +13,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/static/bundle.js")
                 .setViewName("forward:/bundle.js");
-        registry.addViewController("/{x:^(?!(?:pi|index.html|bundle.js)$).+$}")
+        registry.addViewController("/{x:^(?!(?:|swagger-ui|pi|index.html|bundle.js)$).+$}")
                 .setViewName("forward:/");
-        registry.addViewController("/{x:^(?!(?:pi|index.html|bundle.js)$).+$}/**")
+        registry.addViewController("/{x:^(?!(?:|swagger-ui|pi|index.html|bundle.js)$).+$}/**")
                 .setViewName("forward:/");
     }
 
