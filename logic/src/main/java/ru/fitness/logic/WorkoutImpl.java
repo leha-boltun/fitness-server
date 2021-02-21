@@ -1,5 +1,6 @@
 package ru.fitness.logic;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -24,7 +25,9 @@ import ru.fitness.exception.NoTimestampException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,21 +48,28 @@ public class WorkoutImpl implements Workout {
     private final WorkoutRepoAdapter workoutRepo;
     private final TimeStampRepoAdapter timeStampRepo;
     private final EventTypeRepoAdapter eventTypeRepo;
+    private final int maxUndoSeconds;
 
     public WorkoutImpl(WorkoutExerRepoAdapter workoutExerRepo, WUserRepoAdapter userRepo, ProgRepoAdapter progRepo,
                        WorkoutRepoAdapter workoutRepo, TimeStampRepoAdapter timeStampRepo,
-                       EventTypeRepoAdapter eventTypeRepo) {
+                       EventTypeRepoAdapter eventTypeRepo, @Value("${fitness.logic.max-undo-seconds}") int maxUndoSeconds) {
         this.workoutExerRepo = workoutExerRepo;
         this.userRepo = userRepo;
         this.progRepo = progRepo;
         this.workoutRepo = workoutRepo;
         this.timeStampRepo = timeStampRepo;
         this.eventTypeRepo = eventTypeRepo;
+        this.maxUndoSeconds = maxUndoSeconds;
     }
 
     @Override
     public void setWorkoutId(long id) {
         this.id = id;
+    }
+
+    @Override
+    public int getMaxUndoSeconds() {
+        return maxUndoSeconds;
     }
 
     private LocalTime doGetTotalTime() {
@@ -122,9 +132,7 @@ public class WorkoutImpl implements Workout {
         return result;
     }
 
-    @Override
-    public DNextEvent getNextEventName() {
-        IWorkout workout = workoutRepo.getById(id);
+    private DNextEvent doGetNextEvent(IWorkout workout) {
         if (!workout.isFinished()) {
             Optional<IEventType> eType = eventTypeRepo.getNextEventType(id);
             return eType.map(iEventType -> new DNextEvent(
@@ -138,6 +146,28 @@ public class WorkoutImpl implements Workout {
         }
     }
 
+    @Override
+    public DNextEvent getNextEventName() {
+        IWorkout workout = workoutRepo.getById(id);
+        return doGetNextEvent(workout);
+    }
+
+    @Override
+    public DNextEvent undoEvent() {
+        IWorkout workout = workoutRepo.getById(id);
+        ITimeStamp timeStamp = timeStampRepo.getLastTimeStamp(id);
+        LocalDateTime lastDate = timeStamp.getWtime().atDate(LocalDate.now());
+        if (lastDate.until(LocalDateTime.now(), ChronoUnit.SECONDS) > maxUndoSeconds) {
+            // TODO
+            throw new RuntimeException("");
+        }
+        timeStampRepo.removeTimeStamp(timeStamp);
+        if (workout.isFinished()) {
+            workout.setFinished(false);
+        }
+        timeStampRepo.flush();
+        return doGetNextEvent(workout);
+    }
 
     @Override
     public DNextEvent processNextEvent() {

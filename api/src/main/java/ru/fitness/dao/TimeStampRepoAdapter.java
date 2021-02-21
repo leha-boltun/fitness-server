@@ -11,6 +11,8 @@ public interface TimeStampRepoAdapter {
 
     void flush();
 
+    void removeTimeStamp(ITimeStamp timeStamp);
+
     ITimeStamp getFirstTimeStamp(long workoutId);
 
     ITimeStamp getLastTimeStamp(long workoutId);

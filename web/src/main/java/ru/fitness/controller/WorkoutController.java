@@ -1,5 +1,6 @@
 package ru.fitness.controller;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,6 +53,18 @@ public class WorkoutController {
     public DNextEvent processNextEvent(@PathVariable("id") long id) {
         workout.setWorkoutId(id);
         return workout.processNextEvent();
+    }
+
+    @GetMapping("/workout/maxUndoSeconds")
+    public int getMaxUndoSeconds() {
+        return workout.getMaxUndoSeconds();
+    }
+
+    @DeleteMapping("/workout/{id}/undo")
+    @Transactional
+    public DNextEvent undoEvent(@PathVariable("id") long id) {
+        workout.setWorkoutId(id);
+        return workout.undoEvent();
     }
 
     @PostMapping("/workout/{id}/nextSetWeight")

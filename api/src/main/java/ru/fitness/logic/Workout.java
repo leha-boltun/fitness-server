@@ -13,6 +13,8 @@ import java.util.List;
 public interface Workout {
     void setWorkoutId(long id);
 
+    int getMaxUndoSeconds();
+
     DWorkoutMain getMain();
 
     void setWeight(BigDecimal weight);
@@ -20,6 +22,8 @@ public interface Workout {
     List<DTimeStampMain> getTimeStamps();
 
     DNextEvent getNextEventName();
+
+    DNextEvent undoEvent();
 
     DNextEvent processNextEvent();
 

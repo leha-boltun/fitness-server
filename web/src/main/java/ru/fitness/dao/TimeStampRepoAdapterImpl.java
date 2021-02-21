@@ -39,6 +39,11 @@ public class TimeStampRepoAdapterImpl implements TimeStampRepoAdapter {
     }
 
     @Override
+    public void removeTimeStamp(ITimeStamp timeStamp) {
+        entityManager.remove(timeStamp);
+    }
+
+    @Override
     public ITimeStamp getFirstTimeStamp(long workoutId) {
         List<TimeStamp> stamps = repo.getFirstTimeStamp(workoutId, PageRequest.of(0, 1));
         if (stamps.isEmpty()) {

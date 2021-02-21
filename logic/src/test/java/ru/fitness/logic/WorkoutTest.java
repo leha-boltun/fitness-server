@@ -63,7 +63,7 @@ public class WorkoutTest {
         WUserRepoAdapter userRepo = Mockito.mock(WUserRepoAdapter.class);
         progRepo = Mockito.mock(ProgRepoAdapter.class);
         workoutExerRepo = Mockito.mock(WorkoutExerRepoAdapter.class);
-        workout = new WorkoutImpl(workoutExerRepo, userRepo, progRepo, workoutRepo, timeStampRepo, eventTypeRepo);
+        workout = new WorkoutImpl(workoutExerRepo, userRepo, progRepo, workoutRepo, timeStampRepo, eventTypeRepo, 120);
 
         eventType1 = Mockito.mock(IEventType.class);
         when(eventType1.getName()).thenReturn("eventName1");
@@ -129,6 +129,20 @@ public class WorkoutTest {
         assertThat(workout.getTimeStamps(),
                 equalTo(Arrays.asList(new DTimeStampMain(time1, "name1", LocalTime.of(2, 0, 0)),
                         new DTimeStampMain(time2, "name2"))));
+    }
+
+
+    @Test
+    public void testUndoEvent() {
+        when(workoutRepo.getById(11)).thenReturn(iWorkout);
+        when(timeStamp1.getWtime()).thenReturn(LocalTime.now().minus(1, ChronoUnit.MINUTES));
+        when(timeStampRepo.getLastTimeStamp(11)).thenReturn(timeStamp1);
+        when(iWorkout.isFinished()).thenReturn(false);
+        when(eventTypeRepo.getNextEventType(11)).thenReturn(Optional.of(eventType2));
+        when(eventType2.getEventCode()).thenReturn(EventCode.BEFORE_BEGIN.getName());
+        workout.setWorkoutId(11);
+        assertThat(workout.undoEvent(), equalTo(new DNextEvent("eventName2", false, true)));
+        verify(timeStampRepo).removeTimeStamp(timeStamp1);
     }
 
     @Test
