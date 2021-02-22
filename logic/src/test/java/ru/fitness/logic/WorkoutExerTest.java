@@ -6,31 +6,33 @@ import org.mockito.Mockito;
 import ru.fitness.dao.IWorkout;
 import ru.fitness.dao.IWorkoutExer;
 import ru.fitness.dao.IWset;
-import ru.fitness.dao.WorkoutExerRepoAdapter;
+import ru.fitness.dao.Manager;
+import ru.fitness.dao.WorkoutExerManager;
 import ru.fitness.dto.DWSetsPrev;
 import ru.fitness.dto.DWset;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.when;
 
 public class WorkoutExerTest {
-    private WorkoutExerRepoAdapter workoutExerRepo;
+    private Manager manager;
+    private WorkoutExerManager workoutExerManager;
     private WorkoutExerImpl workoutExer;
     private IWorkoutExer iWorkoutExer;
 
     @BeforeEach
     public void beforeEach() {
-        workoutExerRepo = Mockito.mock(WorkoutExerRepoAdapter.class);
-        workoutExer = new WorkoutExerImpl(workoutExerRepo);
+        manager = Mockito.mock(Manager.class);
+        workoutExerManager = Mockito.mock(WorkoutExerManager.class);
+        workoutExer = new WorkoutExerImpl(manager, workoutExerManager);
 
         iWorkoutExer = Mockito.mock(IWorkoutExer.class);
-
-        when(workoutExerRepo.getById(57)).thenReturn(iWorkoutExer);
 
         IWset wset1 = Mockito.mock(IWset.class);
         IWset wset2 = Mockito.mock(IWset.class);
@@ -47,7 +49,7 @@ public class WorkoutExerTest {
 
     @Test
     public void getWSets() {
-        when(workoutExerRepo.getById(57)).thenReturn(iWorkoutExer);
+        when(manager.getById(IWorkoutExer.class, 57L)).thenReturn(iWorkoutExer);
 
         workoutExer.setId(57);
         assertThat(workoutExer.getWsets(), equalTo(Arrays.asList(
@@ -57,7 +59,7 @@ public class WorkoutExerTest {
 
     @Test
     public void getPrevWsets() {
-        when(workoutExerRepo.getPrevExer(57)).thenReturn(iWorkoutExer);
+        when(workoutExerManager.getPrevExer(57L)).thenReturn(Optional.of(iWorkoutExer));
         when(iWorkoutExer.getId()).thenReturn(57L);
         IWorkout workout = Mockito.mock(IWorkout.class);
         when(workout.getWdate()).thenReturn(LocalDate.of(2020, 1, 2));

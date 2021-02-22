@@ -51,10 +51,10 @@ public class Prog implements IProg {
     private Prog prevProg;
 
     @Column(updatable = false, insertable = false)
-    private Integer prevProgId;
+    private Long prevProgId;
 
     @Override
-    public Integer getPrevProgId() {
+    public Long getPrevProgId() {
         return prevProgId;
     }
 

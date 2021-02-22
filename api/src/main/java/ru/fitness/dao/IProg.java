@@ -3,7 +3,7 @@ package ru.fitness.dao;
 import java.util.Set;
 
 public interface IProg {
-    Integer getPrevProgId();
+    Long getPrevProgId();
 
     boolean isPrevious();
 

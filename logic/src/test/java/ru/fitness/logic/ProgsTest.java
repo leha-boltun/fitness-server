@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import ru.fitness.dao.IProg;
-import ru.fitness.dao.ProgRepoAdapter;
+import ru.fitness.dao.ProgManager;
 import ru.fitness.dto.DProg;
 
 import java.util.Arrays;
@@ -15,11 +15,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class ProgsTest {
-    private ProgRepoAdapter progRepo;
+    private ProgManager progManager;
 
     @BeforeEach
     public void beforeEach() {
-        progRepo = Mockito.mock(ProgRepoAdapter.class);
+        progManager = Mockito.mock(ProgManager.class);
     }
 
     @Test
@@ -30,9 +30,9 @@ public class ProgsTest {
         when(prog2.getId()).thenReturn(2L);
         when(prog1.getName()).thenReturn("prog1");
         when(prog2.getName()).thenReturn("prog2");
-        when(progRepo.getProgs()).thenReturn(Arrays.asList(prog1, prog2));
-        assertThat(new ProgsImpl(progRepo).getProgs(),
+        when(progManager.getProgs()).thenReturn(Arrays.asList(prog1, prog2));
+        assertThat(new ProgsImpl(progManager).getProgs(),
                 equalTo(Arrays.asList(new DProg(1, "prog1"), new DProg(2, "prog2"))));
-        verify(progRepo).getProgs();
+        verify(progManager).getProgs();
     }
 }

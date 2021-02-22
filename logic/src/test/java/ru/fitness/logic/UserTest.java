@@ -6,9 +6,10 @@ import org.mockito.Mockito;
 import ru.fitness.dao.IProg;
 import ru.fitness.dao.IWorkout;
 import ru.fitness.dao.IWuser;
-import ru.fitness.dao.ProgRepoAdapter;
-import ru.fitness.dao.WUserRepoAdapter;
-import ru.fitness.dao.WorkoutRepoAdapter;
+import ru.fitness.dao.Manager;
+import ru.fitness.dao.ProgManager;
+import ru.fitness.dao.WorkoutManager;
+import ru.fitness.dao.WuserManager;
 import ru.fitness.dto.DProg;
 import ru.fitness.dto.DUserMain;
 import ru.fitness.dto.DWorkout;
@@ -23,9 +24,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class UserTest {
-    private WorkoutRepoAdapter workoutRepo;
-    private WUserRepoAdapter userRepo;
-    private ProgRepoAdapter progRepo;
+    private Manager manager;
+    private WorkoutManager workoutManager;
+    private WuserManager userManager;
+    private ProgManager progManager;
     private User user;
     private Workout workout;
     private IWorkout workout1;
@@ -33,11 +35,12 @@ public class UserTest {
 
     @BeforeEach
     public void beforeEach() {
-        workoutRepo = Mockito.mock(WorkoutRepoAdapter.class);
-        userRepo = Mockito.mock(WUserRepoAdapter.class);
+        manager = Mockito.mock(Manager.class);
+        workoutManager = Mockito.mock(WorkoutManager.class);
+        userManager = Mockito.mock(WuserManager.class);
         workout = Mockito.mock(Workout.class);
-        progRepo = Mockito.mock(ProgRepoAdapter.class);
-        user = new UserImpl(workoutRepo, userRepo, workout, progRepo);
+        progManager = Mockito.mock(ProgManager.class);
+        user = new UserImpl(manager, workoutManager, workout, progManager);
         user.setUserId(5);
         workout1 = Mockito.mock(IWorkout.class);
         workout2 = Mockito.mock(IWorkout.class);
@@ -55,18 +58,18 @@ public class UserTest {
         when(workout1.getProg()).thenReturn(prog);
         when(workout2.getProg()).thenReturn(prog);
         when(workout.getTotalTime()).thenReturn(null).thenReturn(LocalTime.of(2, 0));
-        when(workoutRepo.findByUserId(5)).thenReturn(Arrays.asList(workout1, workout2));
+        when(workoutManager.findByUserId(5)).thenReturn(Arrays.asList(workout1, workout2));
         assertThat(user.getWorkouts(),
                 equalTo(Arrays.asList(new DWorkout(1L, cur, "Program name 1", false),
                         new DWorkout(2L, cur, "Program name 1", false, LocalTime.of(2, 0)))));
-        verify(workoutRepo).findByUserId(5);
+        verify(workoutManager).findByUserId(5);
     }
 
     @Test
     public void getMainTest() {
         IWuser wuser = Mockito.mock(IWuser.class);
         when(wuser.getName()).thenReturn("user1");
-        when(userRepo.getUser(5)).thenReturn(wuser);
+        when(manager.getById(IWuser.class, 5)).thenReturn(wuser);
         user.setUserId(5);
         assertThat(user.getMain(), equalTo(new DUserMain("user1")));
     }
@@ -79,7 +82,7 @@ public class UserTest {
         when(prog1.getId()).thenReturn(1L);
         when(prog2.getName()).thenReturn("prog2");
         when(prog2.getId()).thenReturn(2L);
-        when(progRepo.getActualProgsByWuserId(7)).thenReturn(Arrays.asList(prog2, prog1));
+        when(progManager.getActualProgsByWuserId(7)).thenReturn(Arrays.asList(prog2, prog1));
         user.setUserId(7);
         assertThat(user.getProgs(),
                 equalTo(Arrays.asList(new DProg(1, "prog1"), new DProg(2, "prog2"))));

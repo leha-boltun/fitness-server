@@ -31,4 +31,13 @@ public class DWSetsPrev {
     public int hashCode() {
         return Objects.hash(prevId, wsets);
     }
+
+    @Override
+    public String toString() {
+        return "DWSetsPrev{" +
+                "prevId=" + prevId +
+                ", wsets=" + wsets +
+                ", date=" + date +
+                '}';
+    }
 }

@@ -1,0 +1,1 @@
+alter table prog alter column prev_prog_id type bigint;
