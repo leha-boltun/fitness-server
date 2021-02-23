@@ -44,7 +44,7 @@ public class UserImpl implements User {
         return workoutManager.findByUserId(userId).stream().map((workout) -> {
                 workoutLogic.setWorkoutId(workout.getId());
                 return new DWorkout(workout.getId(), workout.getWdate(), workout.getProg().getName(),
-                        workout.isFinished(), workoutLogic.getTotalTime());
+                        workout.isFinished(), workoutLogic.getTotalTime().orElse(null));
         }).collect(Collectors.toList());
     }
 

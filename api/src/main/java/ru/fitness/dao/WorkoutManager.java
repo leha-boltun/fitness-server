@@ -12,9 +12,9 @@ public interface WorkoutManager {
 
     Optional<IWorkout> getPrevById(long workoutId);
 
-    ITimeStamp getFirstTimeStamp(long workoutId);
+    Optional<ITimeStamp> getFirstTimeStamp(long workoutId);
 
-    ITimeStamp getLastTimeStamp(long workoutId);
+    Optional<ITimeStamp> getLastTimeStamp(long workoutId);
 
     List<ITimeStamp> getByWorkoutId(long workoutId);
 }

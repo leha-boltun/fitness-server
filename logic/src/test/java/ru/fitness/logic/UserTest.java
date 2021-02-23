@@ -9,7 +9,6 @@ import ru.fitness.dao.IWuser;
 import ru.fitness.dao.Manager;
 import ru.fitness.dao.ProgManager;
 import ru.fitness.dao.WorkoutManager;
-import ru.fitness.dao.WuserManager;
 import ru.fitness.dto.DProg;
 import ru.fitness.dto.DUserMain;
 import ru.fitness.dto.DWorkout;
@@ -17,6 +16,7 @@ import ru.fitness.dto.DWorkout;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -26,7 +26,6 @@ import static org.mockito.Mockito.when;
 public class UserTest {
     private Manager manager;
     private WorkoutManager workoutManager;
-    private WuserManager userManager;
     private ProgManager progManager;
     private User user;
     private Workout workout;
@@ -37,7 +36,6 @@ public class UserTest {
     public void beforeEach() {
         manager = Mockito.mock(Manager.class);
         workoutManager = Mockito.mock(WorkoutManager.class);
-        userManager = Mockito.mock(WuserManager.class);
         workout = Mockito.mock(Workout.class);
         progManager = Mockito.mock(ProgManager.class);
         user = new UserImpl(manager, workoutManager, workout, progManager);
@@ -57,7 +55,7 @@ public class UserTest {
         when(prog.getName()).thenReturn("Program name 1");
         when(workout1.getProg()).thenReturn(prog);
         when(workout2.getProg()).thenReturn(prog);
-        when(workout.getTotalTime()).thenReturn(null).thenReturn(LocalTime.of(2, 0));
+        when(workout.getTotalTime()).thenReturn(Optional.empty()).thenReturn(Optional.of(LocalTime.of(2, 0)));
         when(workoutManager.findByUserId(5)).thenReturn(Arrays.asList(workout1, workout2));
         assertThat(user.getWorkouts(),
                 equalTo(Arrays.asList(new DWorkout(1L, cur, "Program name 1", false),

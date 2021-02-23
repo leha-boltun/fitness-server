@@ -93,7 +93,7 @@ public class WorkoutController {
     @Transactional
     public LocalTime getTotalTime(@PathVariable("id") long id) {
         workout.setWorkoutId(id);
-        return workout.getTotalTime();
+        return workout.getTotalTime().orElse(null);
     }
 
     @PatchMapping("/workout/{id}/weight")

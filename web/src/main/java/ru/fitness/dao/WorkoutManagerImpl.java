@@ -3,7 +3,6 @@ package ru.fitness.dao;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import ru.fitness.exception.NoTimestampException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,22 +42,22 @@ public class WorkoutManagerImpl implements WorkoutManager {
     }
 
     @Override
-    public ITimeStamp getFirstTimeStamp(long workoutId) {
+    public Optional<ITimeStamp> getFirstTimeStamp(long workoutId) {
         List<TimeStamp> stamps = workoutRepo.getFirstTimeStamp(workoutId, PageRequest.of(0, 1));
         if (stamps.isEmpty()) {
-            throw new NoTimestampException();
+            return Optional.empty();
         } else {
-            return stamps.get(0);
+            return Optional.of(stamps.get(0));
         }
     }
 
     @Override
-    public ITimeStamp getLastTimeStamp(long workoutId) {
+    public Optional<ITimeStamp> getLastTimeStamp(long workoutId) {
         List<TimeStamp> stamps = workoutRepo.getLastTimeStamp(workoutId, PageRequest.of(0, 1));
         if (stamps.isEmpty()) {
-            throw new NoTimestampException();
+            return Optional.empty();
         } else {
-            return stamps.get(0);
+            return Optional.of(stamps.get(0));
         }
     }
 

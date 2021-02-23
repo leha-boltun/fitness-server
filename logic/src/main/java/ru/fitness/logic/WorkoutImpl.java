@@ -18,7 +18,7 @@ import ru.fitness.dto.DNextEvent;
 import ru.fitness.dto.DTimeStampMain;
 import ru.fitness.dto.DWorkout;
 import ru.fitness.dto.DWorkoutMain;
-import ru.fitness.exception.NoTimestampException;
+import ru.fitness.exception.UnexpectedException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -59,19 +59,22 @@ public class WorkoutImpl implements Workout {
         return maxUndoSeconds;
     }
 
-    private LocalTime doGetTotalTime() {
-        return
-                workoutManager.getLastTimeStamp(id).getWtime()
-                        .minusNanos(workoutManager.getFirstTimeStamp(id).getWtime().toNanoOfDay());
+    private Optional<LocalTime> doGetTotalTime() {
+        Optional<ITimeStamp> lastStamp = workoutManager.getLastTimeStamp(id);
+        Optional<ITimeStamp> firstStamp = workoutManager.getFirstTimeStamp(id);
+        if (!lastStamp.isPresent() && !firstStamp.isPresent()) {
+            return Optional.empty();
+        }
+        if (!lastStamp.isPresent() || !firstStamp.isPresent()) {
+            throw new UnexpectedException("One timestamp must be first and last");
+        }
+        return Optional.of(lastStamp.get().getWtime().minusNanos(firstStamp.get().getWtime().toNanoOfDay()));
     }
 
     @Override
     public DWorkoutMain getMain() {
         IWorkout workout = manager.getById(IWorkout.class, id);
-        LocalTime totalTime = null;
-        try {
-            totalTime = doGetTotalTime();
-        } catch (NoTimestampException ignored) {}
+        Optional<LocalTime> totalTime = doGetTotalTime();
         BigDecimal weightDiffSame = null;
         if (workout.getPrevWorkout() != null &&
                 workout.getWeight() != null &&
@@ -86,7 +89,7 @@ public class WorkoutImpl implements Workout {
             }
         }
         return new DWorkoutMain(workout.getWuserId(), workout.getWdate(), workout.isFinished(),
-                workout.getWeight(), totalTime, weightDiff, weightDiffSame);
+                workout.getWeight(), totalTime.orElse(null), weightDiff, weightDiffSame);
     }
 
     @Override
@@ -142,7 +145,8 @@ public class WorkoutImpl implements Workout {
     @Override
     public DNextEvent undoEvent() {
         IWorkout workout = manager.getById(IWorkout.class, id);
-        ITimeStamp timeStamp = workoutManager.getLastTimeStamp(id);
+        // TODO
+        ITimeStamp timeStamp = workoutManager.getLastTimeStamp(id).orElseThrow(() -> new RuntimeException(""));
         LocalDateTime lastDate = timeStamp.getWtime().atDate(LocalDate.now());
         if (lastDate.until(LocalDateTime.now(), ChronoUnit.SECONDS) > maxUndoSeconds) {
             // TODO
@@ -281,11 +285,7 @@ public class WorkoutImpl implements Workout {
     }
 
     @Override
-    public LocalTime getTotalTime() {
-        try {
-            return doGetTotalTime();
-        } catch (NoTimestampException ex) {
-            return null;
-        }
+    public Optional<LocalTime> getTotalTime() {
+        return doGetTotalTime();
     }
 }

@@ -18,7 +18,6 @@ import ru.fitness.dto.DNextEvent;
 import ru.fitness.dto.DTimeStampMain;
 import ru.fitness.dto.DWorkout;
 import ru.fitness.dto.DWorkoutMain;
-import ru.fitness.exception.NoTimestampException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -87,8 +86,8 @@ public class WorkoutTest {
         when(iWorkout.isFinished()).thenReturn(true);
         when(iWorkout.getWeight()).thenReturn(new BigDecimal("2.4"));
         when(manager.getById(IWorkout.class, 55L)).thenReturn(iWorkout);
-        when(workoutManager.getFirstTimeStamp(55)).thenThrow(NoTimestampException.class);
-        when(workoutManager.getLastTimeStamp(55)).thenThrow(NoTimestampException.class);
+        when(workoutManager.getFirstTimeStamp(55)).thenReturn(Optional.empty());
+        when(workoutManager.getLastTimeStamp(55)).thenReturn(Optional.empty());
         IWorkout workout2 = Mockito.mock(IWorkout.class);
         when(iWorkout.getPrevWorkout()).thenReturn(workout2);
         when(workout2.getWeight()).thenReturn(new BigDecimal("1.2"));
@@ -125,7 +124,7 @@ public class WorkoutTest {
     public void testUndoEvent() {
         when(manager.getById(IWorkout.class, 11L)).thenReturn(iWorkout);
         when(timeStamp1.getWtime()).thenReturn(LocalTime.now().minus(1, ChronoUnit.MINUTES));
-        when(workoutManager.getLastTimeStamp(11)).thenReturn(timeStamp1);
+        when(workoutManager.getLastTimeStamp(11)).thenReturn(Optional.of(timeStamp1));
         when(iWorkout.isFinished()).thenReturn(false);
         when(workoutManager.getNextEventType(11)).thenReturn(Optional.of(eventType2));
         when(eventType2.getEventCode()).thenReturn(EventCode.BEFORE_BEGIN.getName());
@@ -261,19 +260,19 @@ public class WorkoutTest {
     @Test
     public void getTotalTime() {
         ITimeStamp timeStamp2 = Mockito.mock(ITimeStamp.class);
-        when(workoutManager.getFirstTimeStamp(67)).thenReturn(timeStamp2);
+        when(workoutManager.getFirstTimeStamp(67)).thenReturn(Optional.of(timeStamp2));
         LocalTime firstTime = LocalTime.now().minus(3, ChronoUnit.MINUTES);
         when(timeStamp2.getWtime()).thenReturn(firstTime);
 
         ITimeStamp timeStamp3 = Mockito.mock(ITimeStamp.class);
-        when(workoutManager.getLastTimeStamp(67)).thenReturn(timeStamp3);
+        when(workoutManager.getLastTimeStamp(67)).thenReturn(Optional.of(timeStamp3));
         LocalTime lastTime = firstTime.plus(1, ChronoUnit.MINUTES);
         when(timeStamp3.getWtime()).thenReturn(lastTime);
 
-        when(workoutManager.getFirstTimeStamp(67)).thenReturn(timeStamp2);
+        when(workoutManager.getFirstTimeStamp(67)).thenReturn(Optional.of(timeStamp2));
         when(manager.getById(IWorkout.class, 67L)).thenReturn(iWorkout);
         workout.setWorkoutId(67);
-        assertThat(workout.getTotalTime(), equalTo(LocalTime.of(0, 1, 0)));
+        assertThat(workout.getTotalTime(), equalTo(Optional.of(LocalTime.of(0, 1, 0))));
     }
 
     @Test
