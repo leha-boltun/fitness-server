@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -56,8 +57,8 @@ public class Workout implements IWorkout {
     private BigDecimal weight;
 
     @Override
-    public IWorkout getPrevWorkout() {
-        return prevWorkout;
+    public Optional<IWorkout> getPrevWorkout() {
+        return Optional.ofNullable(prevWorkout);
     }
 
     @Override
@@ -134,8 +135,8 @@ public class Workout implements IWorkout {
     }
 
     @Override
-    public BigDecimal getWeight() {
-        return weight;
+    public Optional<BigDecimal> getWeight() {
+        return Optional.ofNullable(weight);
     }
 
     @Override

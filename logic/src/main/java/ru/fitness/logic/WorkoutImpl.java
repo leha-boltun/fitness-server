@@ -75,21 +75,23 @@ public class WorkoutImpl implements Workout {
     public DWorkoutMain getMain() {
         IWorkout workout = manager.getById(IWorkout.class, id);
         Optional<LocalTime> totalTime = doGetTotalTime();
-        BigDecimal weightDiffSame = null;
-        if (workout.getPrevWorkout() != null &&
-                workout.getWeight() != null &&
-                workout.getPrevWorkout().getWeight() != null) {
-            weightDiffSame = workout.getWeight().subtract(workout.getPrevWorkout().getWeight());
+        Optional<BigDecimal> weightDiffSame = Optional.empty();
+        if (workout.getPrevWorkout().isPresent() &&
+                workout.getWeight().isPresent() &&
+                workout.getPrevWorkout().get().getWeight().isPresent()) {
+            BigDecimal prevWeight = workout.getPrevWorkout().get().getWeight().get();
+            weightDiffSame = Optional.of(workout.getWeight().get().subtract(prevWeight));
         }
-        BigDecimal weightDiff = null;
-        if (workout.getWeight() != null) {
+        Optional<BigDecimal> weightDiff = Optional.empty();
+        if (workout.getWeight().isPresent()) {
             Optional<IWorkout> prevWorkoutOther = workoutManager.getPrevById(id);
-            if (prevWorkoutOther.isPresent() && prevWorkoutOther.get().getWeight() != null) {
-                weightDiff = workout.getWeight().subtract(prevWorkoutOther.get().getWeight());
+            if (prevWorkoutOther.isPresent() && prevWorkoutOther.get().getWeight().isPresent()) {
+                weightDiff = Optional.of(workout.getWeight().get().subtract(prevWorkoutOther.get().getWeight().get()));
             }
         }
         return new DWorkoutMain(workout.getWuserId(), workout.getWdate(), workout.isFinished(),
-                workout.getWeight(), totalTime.orElse(null), weightDiff, weightDiffSame);
+                workout.getWeight().orElse(null), totalTime.orElse(null), weightDiff.orElse(null),
+                weightDiffSame.orElse(null));
     }
 
     @Override
@@ -101,23 +103,19 @@ public class WorkoutImpl implements Workout {
 
     @Override
     public List<DTimeStampMain> getTimeStamps() {
-        DTimeStampMain[] prevStamp = new DTimeStampMain[1];
         List<ITimeStamp> stamps = workoutManager.getByWorkoutId(id);
         Collections.reverse(stamps);
-        List<DTimeStampMain> result = stamps.stream()
-                .map((timeStamp) -> {
+        List<DTimeStampMain> result = stamps.stream().collect(ArrayList::new, (prevStamps, timeStamp) -> {
                     DTimeStampMain curStamp;
-                    if (prevStamp[0] == null) {
+                    if (prevStamps.isEmpty()) {
                         curStamp = new DTimeStampMain(timeStamp.getWtime(), timeStamp.getEventType().getName());
                     } else {
                         curStamp = new DTimeStampMain(
                                 timeStamp.getWtime(), timeStamp.getEventType().getName(),
-                                timeStamp.getWtime().minusNanos(prevStamp[0].time.toNanoOfDay()));
+                                timeStamp.getWtime().minusNanos(prevStamps.get(0).time.toNanoOfDay()));
                     }
-                    prevStamp[0] = curStamp;
-                    return curStamp;
-                })
-                .collect(Collectors.toList());
+                    prevStamps.add(curStamp);
+                }, ArrayList::addAll);
         Collections.reverse(result);
         return result;
     }
@@ -245,8 +243,8 @@ public class WorkoutImpl implements Workout {
         IWorkout workout = manager.getById(IWorkout.class, id);
         Map<Long, IWorkoutExer> curExers =
                 workout.getWorkoutExers().stream().collect(Collectors.toMap(it -> it.getExer().getId(), Function.identity()));
-        Map<Long, IWorkoutExer> prevExers = (workout.getPrevWorkout() == null) ? Collections.emptyMap() :
-                workout.getPrevWorkout().getWorkoutExers().stream()
+        Map<Long, IWorkoutExer> prevExers = (!workout.getPrevWorkout().isPresent()) ? Collections.emptyMap() :
+                workout.getPrevWorkout().get().getWorkoutExers().stream()
                         .collect(Collectors.toMap(it -> it.getExer().getId(), Function.identity()));
         List<ItemAndOrder> result = new ArrayList<>(curExers.size());
 

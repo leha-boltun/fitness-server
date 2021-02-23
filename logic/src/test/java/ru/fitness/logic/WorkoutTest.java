@@ -84,16 +84,16 @@ public class WorkoutTest {
     public void getMain() {
         when(iWorkout.getWuserId()).thenReturn(77);
         when(iWorkout.isFinished()).thenReturn(true);
-        when(iWorkout.getWeight()).thenReturn(new BigDecimal("2.4"));
+        when(iWorkout.getWeight()).thenReturn(Optional.of(new BigDecimal("2.4")));
         when(manager.getById(IWorkout.class, 55L)).thenReturn(iWorkout);
         when(workoutManager.getFirstTimeStamp(55)).thenReturn(Optional.empty());
         when(workoutManager.getLastTimeStamp(55)).thenReturn(Optional.empty());
         IWorkout workout2 = Mockito.mock(IWorkout.class);
-        when(iWorkout.getPrevWorkout()).thenReturn(workout2);
-        when(workout2.getWeight()).thenReturn(new BigDecimal("1.2"));
+        when(iWorkout.getPrevWorkout()).thenReturn(Optional.of(workout2));
+        when(workout2.getWeight()).thenReturn(Optional.of(new BigDecimal("1.2")));
         IWorkout workout3 = Mockito.mock(IWorkout.class);
         when(workoutManager.getPrevById(55)).thenReturn(Optional.of(workout3));
-        when(workout3.getWeight()).thenReturn(new BigDecimal("1.0"));
+        when(workout3.getWeight()).thenReturn(Optional.of(new BigDecimal("1.0")));
         workout.setWorkoutId(55);
 
         assertThat(workout.getMain(),
@@ -306,7 +306,7 @@ public class WorkoutTest {
         when(exer4.getId()).thenReturn(16L);
 
         IWorkout workout2 = Mockito.mock(IWorkout.class);
-        when(iWorkout.getPrevWorkout()).thenReturn(workout2);
+        when(iWorkout.getPrevWorkout()).thenReturn(Optional.of(workout2));
         IWorkoutExer workoutExer3 = Mockito.mock(IWorkoutExer.class);
         when(workoutExer3.getExer()).thenReturn(exer4);
         when(workoutExer3.getId()).thenReturn(7L);
