@@ -235,7 +235,7 @@ public class WorkoutTest {
         IWorkout iWorkoutPrev = Mockito.mock(IWorkout.class);
         when(workoutManager.getLastByProgId(1L)).thenReturn(Optional.empty());
         when(manager.getById(IProg.class, 1L)).thenReturn(prog);
-        when(prog.getPrevProgId()).thenReturn(81L);
+        when(prog.getPrevProgId()).thenReturn(Optional.of(81L));
         when(workoutManager.getLastByProgId(81L)).thenReturn(Optional.of(iWorkoutPrev));
         assertThat(workout.createWorkout(5, 66, 1),
                 equalTo(new DWorkout(21L, cur, "Prog name 1", false)));

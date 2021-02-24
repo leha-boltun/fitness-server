@@ -11,6 +11,8 @@ import ru.fitness.dao.WorkoutManager;
 import ru.fitness.dto.DProg;
 import ru.fitness.dto.DUserMain;
 import ru.fitness.dto.DWorkout;
+import ru.fitness.exception.EntityNotFoundException;
+import ru.fitness.exception.LogicException;
 
 import java.util.Comparator;
 import java.util.List;
@@ -50,7 +52,11 @@ public class UserImpl implements User {
 
     @Override
     public DUserMain getMain() {
-        return new DUserMain(manager.getById(IWuser.class, userId).getName());
+        try {
+            return new DUserMain(manager.getById(IWuser.class, userId).getName());
+        } catch (EntityNotFoundException ex) {
+            throw new LogicException("User with id " + userId + " was not found", ex, LogicException.ErrorCode.NOT_FOUND);
+        }
     }
 
     @Override

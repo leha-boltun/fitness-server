@@ -1,9 +1,10 @@
 package ru.fitness.dao;
 
+import java.util.Optional;
 import java.util.Set;
 
 public interface IProg {
-    Long getPrevProgId();
+    Optional<Long> getPrevProgId();
 
     boolean isPrevious();
 

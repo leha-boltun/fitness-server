@@ -5,6 +5,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.RegexPatternTypeFilter;
 import org.springframework.stereotype.Service;
+import ru.fitness.exception.EntityNotFoundException;
 import ru.fitness.exception.UnexpectedException;
 
 import javax.persistence.EntityManager;
@@ -40,6 +41,13 @@ public class ManagerImpl implements Manager {
         }
     }
 
+    private <T> T throwIfNotFound(T entity, Class<?> clazz, Object id) {
+        if (entity == null) {
+            throw new EntityNotFoundException(clazz, id);
+        }
+        return entity;
+    }
+
     private final EntityManager entityManager;
 
     public ManagerImpl(EntityManager entityManager) {
@@ -57,25 +65,25 @@ public class ManagerImpl implements Manager {
     @Override
     public <T> T getById(Class<T> entityClass, int id) {
         //noinspection unchecked
-        return (T) entityManager.find(getEntityFromInterface(entityClass), id);
+        return throwIfNotFound((T) entityManager.find(getEntityFromInterface(entityClass), id), entityClass, id);
     }
 
     @Override
     public <T> T getById(Class<T> entityClass, long id) {
         //noinspection unchecked
-        return (T) entityManager.find(getEntityFromInterface(entityClass), id);
+        return throwIfNotFound((T) entityManager.find(getEntityFromInterface(entityClass), id), entityClass, id);
     }
 
     @Override
     public <T> T getRef(Class<T> entityClass, int id) {
         //noinspection unchecked
-        return (T) entityManager.getReference(getEntityFromInterface(entityClass), id);
+        return throwIfNotFound((T) entityManager.getReference(getEntityFromInterface(entityClass), id), entityClass, id);
     }
 
     @Override
     public <T> T getRef(Class<T> entityClass, long id) {
         //noinspection unchecked
-        return (T) entityManager.getReference(getEntityFromInterface(entityClass), id);
+        return throwIfNotFound((T) entityManager.getReference(getEntityFromInterface(entityClass), id), entityClass, id);
     }
 
     @Override

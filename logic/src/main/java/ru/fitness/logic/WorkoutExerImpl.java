@@ -9,6 +9,8 @@ import ru.fitness.dao.Manager;
 import ru.fitness.dao.WorkoutExerManager;
 import ru.fitness.dto.DWSetsPrev;
 import ru.fitness.dto.DWset;
+import ru.fitness.exception.EntityNotFoundException;
+import ru.fitness.exception.LogicException;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -40,7 +42,12 @@ public class WorkoutExerImpl implements WorkoutExer {
 
     @Override
     public List<DWset> getWsets() {
-        IWorkoutExer workoutExer = manager.getById(IWorkoutExer.class, id);
+        IWorkoutExer workoutExer;
+        try {
+            workoutExer = manager.getById(IWorkoutExer.class, id);
+        } catch (EntityNotFoundException ex) {
+            throw new LogicException("Workout exercise with id " + id + " was not found", ex, LogicException.ErrorCode.NOT_FOUND);
+        }
         return doGetWsets(workoutExer);
     }
 

@@ -18,6 +18,8 @@ import ru.fitness.dto.DNextEvent;
 import ru.fitness.dto.DTimeStampMain;
 import ru.fitness.dto.DWorkout;
 import ru.fitness.dto.DWorkoutMain;
+import ru.fitness.exception.EntityNotFoundException;
+import ru.fitness.exception.LogicException;
 import ru.fitness.exception.UnexpectedException;
 
 import java.math.BigDecimal;
@@ -71,9 +73,17 @@ public class WorkoutImpl implements Workout {
         return Optional.of(lastStamp.get().getWtime().minusNanos(firstStamp.get().getWtime().toNanoOfDay()));
     }
 
+    private IWorkout getWorkout(long id) {
+        try {
+            return manager.getById(IWorkout.class, id);
+        } catch (EntityNotFoundException ex) {
+            throw new LogicException("Workout with id " + ex.getId() + " was not found", ex, LogicException.ErrorCode.NOT_FOUND);
+        }
+    }
+
     @Override
     public DWorkoutMain getMain() {
-        IWorkout workout = manager.getById(IWorkout.class, id);
+        IWorkout workout = getWorkout(id);
         Optional<LocalTime> totalTime = doGetTotalTime();
         Optional<BigDecimal> weightDiffSame = Optional.empty();
         if (workout.getPrevWorkout().isPresent() &&
@@ -96,7 +106,7 @@ public class WorkoutImpl implements Workout {
 
     @Override
     public void setWeight(BigDecimal weight) {
-        IWorkout workout = manager.getById(IWorkout.class, id);
+        IWorkout workout = getWorkout(id);
         workout.setWeight(weight);
         manager.save(workout);
     }
@@ -106,16 +116,16 @@ public class WorkoutImpl implements Workout {
         List<ITimeStamp> stamps = workoutManager.getByWorkoutId(id);
         Collections.reverse(stamps);
         List<DTimeStampMain> result = stamps.stream().collect(ArrayList::new, (prevStamps, timeStamp) -> {
-                    DTimeStampMain curStamp;
-                    if (prevStamps.isEmpty()) {
-                        curStamp = new DTimeStampMain(timeStamp.getWtime(), timeStamp.getEventType().getName());
-                    } else {
-                        curStamp = new DTimeStampMain(
-                                timeStamp.getWtime(), timeStamp.getEventType().getName(),
-                                timeStamp.getWtime().minusNanos(prevStamps.get(0).time.toNanoOfDay()));
-                    }
-                    prevStamps.add(curStamp);
-                }, ArrayList::addAll);
+            DTimeStampMain curStamp;
+            if (prevStamps.isEmpty()) {
+                curStamp = new DTimeStampMain(timeStamp.getWtime(), timeStamp.getEventType().getName());
+            } else {
+                curStamp = new DTimeStampMain(
+                        timeStamp.getWtime(), timeStamp.getEventType().getName(),
+                        timeStamp.getWtime().minusNanos(prevStamps.get(0).time.toNanoOfDay()));
+            }
+            prevStamps.add(curStamp);
+        }, ArrayList::addAll);
         Collections.reverse(result);
         return result;
     }
@@ -129,26 +139,23 @@ public class WorkoutImpl implements Workout {
                     iEventType.getEventCode().equals(EventCode.BEFORE_BEGIN.getName())
             )).orElseGet(() -> new DNextEvent("", false, false));
         } else {
-            //TODO
-            throw new RuntimeException();
+            throw new LogicException("Workout " + id + " is finished");
         }
     }
 
     @Override
     public DNextEvent getNextEventName() {
-        IWorkout workout = manager.getById(IWorkout.class, id);
+        IWorkout workout = getWorkout(id);
         return doGetNextEvent(workout);
     }
 
     @Override
     public DNextEvent undoEvent() {
-        IWorkout workout = manager.getById(IWorkout.class, id);
-        // TODO
-        ITimeStamp timeStamp = workoutManager.getLastTimeStamp(id).orElseThrow(() -> new RuntimeException(""));
+        IWorkout workout = getWorkout(id);
+        ITimeStamp timeStamp = workoutManager.getLastTimeStamp(id).orElseThrow(() -> new LogicException("No last event for workout " + id));
         LocalDateTime lastDate = timeStamp.getWtime().atDate(LocalDate.now());
         if (lastDate.until(LocalDateTime.now(), ChronoUnit.SECONDS) > maxUndoSeconds) {
-            // TODO
-            throw new RuntimeException("");
+            throw new LogicException("Last date: " + lastDate.until(LocalDateTime.now(), ChronoUnit.SECONDS) + " > " + maxUndoSeconds + " for workout " + id);
         }
         manager.remove(timeStamp);
         if (workout.isFinished()) {
@@ -160,7 +167,7 @@ public class WorkoutImpl implements Workout {
 
     @Override
     public DNextEvent processNextEvent() {
-        IWorkout workout = manager.getById(IWorkout.class, id);
+        IWorkout workout = getWorkout(id);
         if (!workout.isFinished()) {
             Optional<IEventType> eType = workoutManager.getNextEventType(id);
             if (eType.isPresent()) {
@@ -182,36 +189,50 @@ public class WorkoutImpl implements Workout {
                     return new DNextEvent("", false, false);
                 }
             } else {
-                //TODO
-                throw new RuntimeException("");
+                throw new UnexpectedException("Workout " + id + " is not finished but no next event");
             }
         } else {
-            //TODO
-            throw new RuntimeException("");
+            throw new LogicException("Workout " + id + " is finished");
         }
     }
 
     @Override
     public DWorkout createWorkout(int userId, long progId, long prevId) {
         IWorkout workout = manager.create(IWorkout.class);
-        workout.setWUser(manager.getRef(IWuser.class, userId));
-        IProg prog = manager.getById(IProg.class, progId);
+        try {
+            workout.setWUser(manager.getRef(IWuser.class, userId));
+        } catch (EntityNotFoundException ex) {
+            throw new LogicException("User with id " + ex.getId() + " was not found", ex, LogicException.ErrorCode.NOT_FOUND);
+        }
+        IProg prog;
+        try {
+            prog = manager.getById(IProg.class, progId);
+        } catch (EntityNotFoundException ex) {
+            throw new LogicException("Prog with id " + ex.getId() + " was not found", ex, LogicException.ErrorCode.NOT_FOUND);
+        }
         List<IProgExer> exers = new ArrayList<>(prog.getProgExers());
         int[] cnt = new int[1];
         Set<IWorkoutExer> workoutExers = exers.stream().sorted(Comparator.comparingInt(IProgExer::getExerOrder)).map(
-            (programExer) -> {
-                IWorkoutExer workoutExer = manager.create(IWorkoutExer.class);
-                workoutExer.setExer(programExer.getExer());
-                workoutExer.setWorkout(workout);
-                workoutExer.setExerOrder(cnt[0]);
-                cnt[0]++;
-                return workoutExer;
-            }
+                (programExer) -> {
+                    IWorkoutExer workoutExer = manager.create(IWorkoutExer.class);
+                    workoutExer.setExer(programExer.getExer());
+                    workoutExer.setWorkout(workout);
+                    workoutExer.setExerOrder(cnt[0]);
+                    cnt[0]++;
+                    return workoutExer;
+                }
         ).collect(Collectors.toSet());
         if (prevId != -1) {
             Optional<IWorkout> prevWorkout = workoutManager.getLastByProgId(prevId);
             if (!prevWorkout.isPresent()) {
-                prevWorkout = workoutManager.getLastByProgId(manager.getById(IProg.class, prevId).getPrevProgId());
+                try {
+                    Optional<Long> prevProgId = manager.getById(IProg.class, prevId).getPrevProgId();
+                    if (prevProgId.isPresent()) {
+                        prevWorkout = workoutManager.getLastByProgId(prevProgId.get());
+                    }
+                } catch (EntityNotFoundException ex) {
+                    throw new LogicException("Prog with id " + prevId + " was not found", ex, LogicException.ErrorCode.NOT_FOUND);
+                }
             }
             prevWorkout.ifPresent(workout::setPrevWorkout);
         }
@@ -240,7 +261,7 @@ public class WorkoutImpl implements Workout {
             }
         }
 
-        IWorkout workout = manager.getById(IWorkout.class, id);
+        IWorkout workout = getWorkout(id);
         Map<Long, IWorkoutExer> curExers =
                 workout.getWorkoutExers().stream().collect(Collectors.toMap(it -> it.getExer().getId(), Function.identity()));
         Map<Long, IWorkoutExer> prevExers = (!workout.getPrevWorkout().isPresent()) ? Collections.emptyMap() :

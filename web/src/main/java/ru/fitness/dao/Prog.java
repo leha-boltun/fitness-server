@@ -16,6 +16,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -47,15 +48,15 @@ public class Prog implements IProg {
     private boolean isPrevious;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(nullable = false, name = "prevProgId", updatable = false)
+    @JoinColumn(name = "prevProgId", updatable = false)
     private Prog prevProg;
 
     @Column(updatable = false, insertable = false)
     private Long prevProgId;
 
     @Override
-    public Long getPrevProgId() {
-        return prevProgId;
+    public Optional<Long> getPrevProgId() {
+        return Optional.ofNullable(prevProgId);
     }
 
     @Override

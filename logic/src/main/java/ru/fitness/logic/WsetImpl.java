@@ -8,6 +8,8 @@ import ru.fitness.dao.IWset;
 import ru.fitness.dao.Manager;
 import ru.fitness.dao.WsetManager;
 import ru.fitness.dto.DWset;
+import ru.fitness.exception.EntityNotFoundException;
+import ru.fitness.exception.LogicException;
 
 @Component
 @Scope(value = "request", proxyMode = ScopedProxyMode.INTERFACES)
@@ -29,7 +31,11 @@ public class WsetImpl implements Wset {
     @Override
     public void createWset(long workoutExerId, DWset data) {
         IWset wset = manager.create(IWset.class);
-        wset.setWorkoutExer(manager.getRef(IWorkoutExer.class, workoutExerId));
+        try {
+            wset.setWorkoutExer(manager.getRef(IWorkoutExer.class, workoutExerId));
+        } catch (EntityNotFoundException ex) {
+            throw new LogicException("Workout exercise with id " + ex.getId() + " was not found", ex, LogicException.ErrorCode.NOT_FOUND);
+        }
         wset.setWeight(data.weight);
         wset.setCount(data.count);
         wset.setWsetOrder(wsetManager.getMaxOrder(workoutExerId) + 1);
@@ -39,7 +45,12 @@ public class WsetImpl implements Wset {
     @Override
     public void editWset(DWset data) {
         this.id = data.id;
-        IWset wset = manager.getById(IWset.class, id);
+        IWset wset;
+        try {
+            wset = manager.getById(IWset.class, id);
+        } catch (EntityNotFoundException ex) {
+            throw new LogicException("Set with id " + ex.getId() + " was not found", ex, LogicException.ErrorCode.NOT_FOUND);
+        }
         wset.setWeight(data.weight);
         wset.setCount(data.count);
         manager.save(wset);
