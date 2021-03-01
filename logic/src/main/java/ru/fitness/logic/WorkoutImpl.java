@@ -153,7 +153,7 @@ public class WorkoutImpl implements Workout {
     public DNextEvent undoEvent() {
         IWorkout workout = getWorkout(id);
         ITimeStamp timeStamp = workoutManager.getLastTimeStamp(id).orElseThrow(() -> new LogicException("No last event for workout " + id));
-        LocalDateTime lastDate = timeStamp.getWtime().atDate(LocalDate.now());
+        LocalDateTime lastDate = timeStamp.getWtime().atDate(workout.getWdate());
         if (lastDate.until(LocalDateTime.now(), ChronoUnit.SECONDS) > maxUndoSeconds) {
             throw new LogicException("Last date: " + lastDate.until(LocalDateTime.now(), ChronoUnit.SECONDS) + " > " + maxUndoSeconds + " for workout " + id);
         }
